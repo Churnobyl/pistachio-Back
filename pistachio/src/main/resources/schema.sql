@@ -41,12 +41,15 @@ DESC donate_project;
 CREATE TABLE user
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    membership_id BIGINT,
     email VARCHAR(128) NOT NULL,
     password VARCHAR(32) NOT NULL,
     name VARCHAR(64) NOT NULL,
     user_profile VARCHAR(255),
     is_admin BOOL NOT NULL DEFAULT false,
-    is_activate BOOL NOT NULL DEFAULT true
+    is_activate BOOL NOT NULL DEFAULT true,
+    CONSTRAINT FK_user_membership_id FOREIGN KEY (membership_id)
+    REFERENCES membership(id)
 );
 
 -- 유저 테이블 조회

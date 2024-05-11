@@ -1,4 +1,4 @@
-package com.ssafy.pistachio.model.dto.feed;
+package com.ssafy.pistachio.model.dto.comment;
 
 import java.util.Date;
 
