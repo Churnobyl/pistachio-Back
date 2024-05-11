@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pistachio.model.dao.UserDao">
+    <!-- 유저 회원가입 -->
+    <insert id="createUser" parameterType="user">
+        INSERT INTO user
+        (email, password, name)
+        VALUES
+        (#{email}, #{password}, #{name})
+    </insert>
+
+    <!--  유저 로그인  -->
+    <select id="loginUser" parameterType="user">
+        SELECT * FROM user
+        WHERE email = #{email}, password = #{password}
+    </select>
+
+    <!--  유저 조회  -->
+    <select id="getUserByUserId" parameterType="int">
+        SELECT * FROM user
+        WHERE id = #{id}
+    </select>
+
+    <!--  유저 수정  -->
+    <update id="updateUser" parameterType="user">
+        UPDATE user
+        <set>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="name != null">
+                name = #{name}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!--  유저 탈퇴  -->
+    <update id="inactivateUser" parameterType="user">
+        UPDATE FROM user
+        <set>
+            is_activate = false
+        </set>
+        WHERE id = #{id} AND email = #{email} AND password = #{password}
+    </update>
+
+
+    <!-- 유저 검색 -->
+    <select id="searchUser" parameterType="searchCondition" resultType="user">
+        SELECT * FROM user a
+        INNER JOIN membership b
+        ON a.membership_id = b.id
+        WHERE
+        <trim prefixOverrides="AND">
+            <if test="nickname != null">
+                AND a.name LIKE concat('%', #{nickname}, '%')
+            </if>
+            <if test="membership != null">
+                AND b.name concat('%', #{membership}, '%')
+            </if>
+        </trim>
+    </select>
+
+</mapper>
