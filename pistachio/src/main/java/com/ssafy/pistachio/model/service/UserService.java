@@ -14,7 +14,7 @@ public interface UserService {
     public int login(User user);
 
     // 유저 조회
-    public User getUser(Long id);
+    public User getUser(String name);
 
     // 유저 수정
     public int modifyUser(User user);

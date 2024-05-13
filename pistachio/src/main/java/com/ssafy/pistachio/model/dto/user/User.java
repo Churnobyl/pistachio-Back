@@ -1,16 +1,24 @@
 package com.ssafy.pistachio.model.dto.user;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * 유저
  */
-public class User {
+public class User implements UserDetails {
     private Long id;
     private Long membership_id;
     private String email;
     private String password;
     private String name;
     private String userProfile;
-    private boolean isAdmin;
+    private String role;
     private boolean isActivate;
 
     public User(Long id,
@@ -19,7 +27,7 @@ public class User {
                 String password,
                 String name,
                 String userProfile,
-                boolean isAdmin,
+                String role,
                 boolean isActivate) {
         this.id = id;
         this.membership_id = membership_id;
@@ -27,8 +35,44 @@ public class User {
         this.password = password;
         this.name = name;
         this.userProfile = userProfile;
-        this.isAdmin = isAdmin;
+        this.role = role;
         this.isActivate = isActivate;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(role));
+        return authorities;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActivate;
     }
 
     public Long getId() {
@@ -55,10 +99,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -79,12 +119,12 @@ public class User {
         this.userProfile = userProfile;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public String getRole() {
+        return role;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public boolean isActivate() {
@@ -104,7 +144,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", userProfile='" + userProfile + '\'' +
-                ", isAdmin=" + isAdmin +
+                ", role='" + role + '\'' +
                 ", isActivate=" + isActivate +
                 '}';
     }

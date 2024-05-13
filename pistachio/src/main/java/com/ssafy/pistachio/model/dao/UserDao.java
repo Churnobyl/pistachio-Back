@@ -16,6 +16,9 @@ public interface UserDao {
     // 유저 조회
     public User getUserByUserId(Long id);
 
+    // 이름으로 유저 조회
+    public User getUserByUsername(String name);
+
     // 유저 수정
     public int updateUser(User user);
 

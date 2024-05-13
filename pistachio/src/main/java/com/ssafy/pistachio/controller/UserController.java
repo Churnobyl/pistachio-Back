@@ -36,4 +36,20 @@ public class UserController {
         returnObj.put("msg", "가입 완료");
         return new ResponseEntity<>(returnObj, HttpStatus.OK);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody User user) {
+        System.out.println("user = " + user);
+        Map<String, String> returnObj = new ConcurrentHashMap<>();
+
+        int result = userService.login(user);
+
+        if (result == 0) {
+            returnObj.put("msg", "잘못된 접근입니다.");
+            return new ResponseEntity<>(returnObj, HttpStatus.BAD_REQUEST);
+        }
+
+        returnObj.put("msg", "가입 완료");
+        return new ResponseEntity<>(returnObj, HttpStatus.OK);
+    }
 }

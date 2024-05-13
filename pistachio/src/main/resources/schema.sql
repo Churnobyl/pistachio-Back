@@ -44,7 +44,7 @@ CREATE TABLE user
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     membership_id BIGINT,
     email VARCHAR(128) NOT NULL,
-    password VARCHAR(32) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     name VARCHAR(64) NOT NULL,
     user_profile VARCHAR(255),
     is_admin BOOL NOT NULL DEFAULT false,
