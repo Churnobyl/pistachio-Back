@@ -29,6 +29,7 @@ CREATE TABLE donate_project
     target_donation_amount BIGINT NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,
+    is_end BOOL NOT NULL DEFAULT FALSE,
     CONSTRAINT FK_agency_id FOREIGN KEY (agency_id)
     REFERENCES membership(id)
 );
@@ -43,7 +44,7 @@ CREATE TABLE user
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     membership_id BIGINT,
     email VARCHAR(128) NOT NULL,
-    password VARCHAR(32) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     name VARCHAR(64) NOT NULL,
     user_profile VARCHAR(255),
     is_admin BOOL NOT NULL DEFAULT false,

@@ -23,6 +23,12 @@
         WHERE id = #{id}
     </select>
 
+    <!-- 이름으로 유저 조회 -->
+    <select id="getUserByUsername" parameterType="string">
+        SELECT * FROM user
+        WHERE name = #{name}
+    </select>
+
     <!--  유저 수정  -->
     <update id="updateUser" parameterType="user">
         UPDATE user
