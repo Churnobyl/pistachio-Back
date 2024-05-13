@@ -14,6 +14,7 @@ public class DonateProject {
     private Long targetDonationAmount;
     private Date startTime;
     private Date endTime;
+    private boolean isEnd;
 
     public DonateProject(Long id,
                          Long agencyId,
@@ -22,7 +23,8 @@ public class DonateProject {
                          Long currentDonationAmount,
                          Long targetDonationAmount,
                          Date startTime,
-                         Date endTime) {
+                         Date endTime,
+                         boolean isEnd) {
         this.id = id;
         this.agencyId = agencyId;
         this.name = name;
@@ -31,6 +33,7 @@ public class DonateProject {
         this.targetDonationAmount = targetDonationAmount;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.isEnd = isEnd;
     }
 
     public Long getId() {
@@ -97,6 +100,14 @@ public class DonateProject {
         this.endTime = endTime;
     }
 
+    public boolean isEnd() {
+        return isEnd;
+    }
+
+    public void setEnd(boolean end) {
+        isEnd = end;
+    }
+
     @Override
     public String toString() {
         return "DonateProject{" +
@@ -108,6 +119,7 @@ public class DonateProject {
                 ", targetDonationAmount=" + targetDonationAmount +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
+                ", isEnd=" + isEnd +
                 '}';
     }
 }

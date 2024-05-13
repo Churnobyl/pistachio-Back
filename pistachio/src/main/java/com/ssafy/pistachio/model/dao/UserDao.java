@@ -14,13 +14,10 @@ public interface UserDao {
     public int loginUser(User user);
 
     // 유저 조회
-    public UserDao getUserByUserId(int id);
+    public User getUserByUserId(Long id);
 
     // 유저 수정
     public int updateUser(User user);
-
-    // 유저 탈퇴
-    public int inactivateUser(User user);
 
     // 유저 검색
     public List<User> searchUser(SearchCondition searchCondition);
