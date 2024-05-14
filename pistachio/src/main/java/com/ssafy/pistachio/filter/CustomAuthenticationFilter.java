@@ -1,10 +1,12 @@
 package com.ssafy.pistachio.filter;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.pistachio.authentication.CustomAuthenticationToken;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -18,12 +20,11 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomAuthenticationFilter() {
-        // url과 일치할 경우 해당 필터가 동작합니다.
         super(new AntPathRequestMatcher("/api/user/login"));
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         // 해당 요청이 POST 인지 확인
         if(!isPost(request)) {
             throw new IllegalStateException("Authentication is not supported");
@@ -33,14 +34,14 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         AccountDto accountDto = objectMapper.readValue(request.getReader(), AccountDto.class);
 
         // ID, PASSWORD 가 있는지 확인
-        if(!StringUtils.hasLength(accountDto.getName())
+        if(!StringUtils.hasLength(accountDto.getEmail())
                 || !StringUtils.hasLength(accountDto.getPassword())) {
             throw new IllegalArgumentException("username or password is empty");
         }
 
         // 처음에는 인증 되지 않은 토큰 생성
         CustomAuthenticationToken token = new CustomAuthenticationToken(
-                accountDto.getName(),
+                accountDto.getEmail(),
                 accountDto.getPassword()
         );
 
@@ -60,22 +61,22 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
     }
 
     public static class AccountDto {
-        private String name;
+        private String email;
         private String password;
 
         public AccountDto() {};
 
-        public AccountDto(String name, String password) {
-            this.name = name;
+        public AccountDto(String email, String password) {
+            this.email = email;
             this.password = password;
         }
 
-        public String getName() {
-            return name;
+        public String getEmail() {
+            return email;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setEmail(String email) {
+            this.email = email;
         }
 
         public String getPassword() {

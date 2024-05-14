@@ -1,9 +1,14 @@
 package com.ssafy.pistachio.model.dto.user;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,12 +16,22 @@ import java.util.List;
 /**
  * 유저
  */
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
     private Long id;
     private Long membership_id;
+
+    @NotBlank(message = "이메일은 필수 입력 값입니다.")
+    @Email
     private String email;
+
+    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+//    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\\\W)(?=\\\\S+$).{8,16}\n",
+//            message = "비밀번호는 8~16자 영문 대소문자, 숫자, 특수문자를 사용해 주세요.")
     private String password;
+
+    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,10}$", message = "닉네임은 특수문자를 제외한 2~10자리여야 합니다.")
     private String name;
+
     private String userProfile;
     private String role;
     private boolean isActivate;
@@ -37,6 +52,10 @@ public class User implements UserDetails {
         this.userProfile = userProfile;
         this.role = role;
         this.isActivate = isActivate;
+    }
+
+    public boolean isPasswordMatch(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.matches(password, this.password);
     }
 
     @Override
