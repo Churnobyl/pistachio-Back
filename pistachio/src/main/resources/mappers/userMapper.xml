@@ -23,10 +23,10 @@
         WHERE id = #{id}
     </select>
 
-    <!-- 이름으로 유저 조회 -->
-    <select id="getUserByUsername" parameterType="string">
+    <!-- 이메일로 유저 조회 -->
+    <select id="getUserByEmail" parameterType="string">
         SELECT * FROM user
-        WHERE name = #{name}
+        WHERE email = #{email}
     </select>
 
     <!--  유저 수정  -->

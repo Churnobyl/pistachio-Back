@@ -21,13 +21,13 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException exception) throws IOException, ServletException {
-        String errMsg = "Invalid Username or Password";
+        String errMsg = "Invalid Email or Password";
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         if (exception instanceof BadCredentialsException) {
-            errMsg = "Invalid Username or Password";
+            errMsg = "Invalid Email or Password";
         } else if (exception instanceof DisabledException) {
             errMsg = "Locked";
         } else if (exception instanceof CredentialsExpiredException) {

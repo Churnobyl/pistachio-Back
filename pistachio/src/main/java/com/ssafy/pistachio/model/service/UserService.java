@@ -2,6 +2,7 @@ package com.ssafy.pistachio.model.service;
 
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -11,10 +12,10 @@ public interface UserService {
     public int signup(User user);
 
     // 유저 로그인
-    public int login(User user);
+    public int login(HttpSession session, User user);
 
     // 유저 조회
-    public User getUser(String name);
+    public User getUser(String email);
 
     // 유저 수정
     public int modifyUser(User user);

@@ -3,12 +3,14 @@ package com.ssafy.pistachio.model.service;
 import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,14 +33,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDao.createUser(user);
     }
 
-    @Override
-    public int login(User user) {
+    @Transactional(readOnly = true)
+    public int login(HttpSession session, User user) {
+
+        if (!user.isPasswordMatch(passwordEncoder, user.getPassword())) {
+            throw new UsernameNotFoundException("");
+        }
+
+        session.setAttribute("Login_User", user);
+
         return userDao.loginUser(user);
     }
 
     @Override
-    public User getUser(String name) {
-        return userDao.getUserByUsername(name);
+    public User getUser(String email) {
+        return userDao.getUserByEmail(email);
     }
 
     @Override
@@ -58,12 +67,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.getUserByEmail(email);
 
         if (user == null) {
-            throw new UsernameNotFoundException("username not found");
+            throw new UsernameNotFoundException("email not found");
         }
 
         return user;

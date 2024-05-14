@@ -1,0 +1,37 @@
+services:
+  database:
+    container_name: mysql_db
+    image: mysql
+    environment:
+      MYSQL_DATABASE: pistachio
+      MYSQL_ROOT_HOST: "root"
+      MYSQL_ROOT_PASSWORD: "ssafy"
+    ports:
+      - "3306:3306"
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    networks:
+      - pistachio_default
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports: ["6379"]
+    networks:
+      - pistachio_default
+
+
+  application:
+    container_name: docker-compose-test
+    restart: on-failure
+    image: churnobyl/pistachio:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/pistachio?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "ssafy"
+    depends_on:
+      - database
+
+networks:
+  pistachio_default:

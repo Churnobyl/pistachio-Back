@@ -28,8 +28,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        System.out.println("authentication = " + authentication);
-        User user = userDao.getUserByUsername(authentication.getPrincipal().toString());
+        User user = userDao.getUserByEmail(authentication.getPrincipal().toString());
+
+        request.getSession().setAttribute(user.getName(), user);
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
