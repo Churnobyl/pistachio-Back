@@ -33,6 +33,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDao.createUser(user);
     }
 
+    @Override
+    public boolean checkNameDuplicate(String name) {
+        return userDao.nameDuplicate(name) == 0;
+    }
+
+    @Override
+    public boolean checkEmailDuplicate(String email) {
+        return userDao.emailDuplicate(email) == 0;
+    }
+
+    @Override
+    public List<User> search(SearchCondition condition) {
+        return userDao.searchUsers(condition);
+    }
+
     @Transactional(readOnly = true)
     public int login(HttpSession session, User user) {
 
@@ -40,13 +55,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new UsernameNotFoundException("");
         }
 
-        session.setAttribute("Login_User", user);
+        session.setAttribute("Login_User", user.getEmail());
 
         return userDao.loginUser(user);
     }
 
     @Override
-    public User getUser(String email) {
+    public User getUserByName(String name) {
+        return userDao.getUserByName(name);
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
     }
 
@@ -57,13 +77,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public int inactivate(User user) {
-        user.setActivate(false);
-        return userDao.updateUser(user);
-    }
-
-    @Override
-    public List<User> searchUserBySearchCondition(SearchCondition searchCondition) {
-        return userDao.searchUser(searchCondition);
+        return userDao.inactivateUser(user);
     }
 
     @Override
@@ -73,6 +87,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if (user == null) {
             throw new UsernameNotFoundException("email not found");
+        }
+
+        if (!user.isActivate()) {
+            throw new UsernameNotFoundException("user is not activated");
         }
 
         return user;
