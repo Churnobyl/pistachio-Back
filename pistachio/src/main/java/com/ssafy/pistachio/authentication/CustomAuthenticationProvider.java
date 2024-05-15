@@ -28,8 +28,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        User user = userService.getUser(email);
-        
+        User user = userService.getUserByEmail(email);
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Wrong password");
         }

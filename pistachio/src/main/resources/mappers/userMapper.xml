@@ -11,16 +11,44 @@
         (#{email}, #{password}, #{name})
     </insert>
 
+    <!-- 유저 이름 중복 확인 -->
+    <select id="nameDuplicate" parameterType="string">
+        SELECT count(id) FROM user
+        WHERE name = #{username}
+    </select>
+
+    <!-- 유저 이메일 중복 확인 -->
+    <select id="emailDuplicate" parameterType="string">
+        SELECT count(id) FROM user
+        WHERE email = #{email}
+    </select>
+
+    <!-- 유저 검색 -->
+    <select id="searchUsers" parameterType="searchCondition" resultType="user">
+        SELECT * FROM user a
+        INNER JOIN membership b
+        ON a.membership_id = b.id
+        WHERE
+        <trim prefixOverrides="AND">
+            <if test="name != null">
+                AND a.name LIKE concat('%', #{nickname}, '%')
+            </if>
+            <if test="membership != null">
+                AND b.name concat('%', #{membership}, '%')
+            </if>
+        </trim>
+    </select>
+
     <!--  유저 로그인  -->
     <select id="loginUser" parameterType="user">
         SELECT * FROM user
         WHERE email = #{email}, password = #{password}
     </select>
 
-    <!--  유저 조회  -->
-    <select id="getUserByUserId" parameterType="int">
+    <!--  유저 상세 조회  -->
+    <select id="getUserByName" parameterType="string">
         SELECT * FROM user
-        WHERE id = #{id}
+        WHERE name = #{name}
     </select>
 
     <!-- 이메일로 유저 조회 -->
@@ -45,28 +73,10 @@
 
     <!--  유저 탈퇴  -->
     <update id="inactivateUser" parameterType="user">
-        UPDATE FROM user
+        UPDATE user
         <set>
             is_activate = false
         </set>
-        WHERE id = #{id} AND email = #{email} AND password = #{password}
+        WHERE id = #{id} AND email = #{email}
     </update>
-
-
-    <!-- 유저 검색 -->
-    <select id="searchUser" parameterType="searchCondition" resultType="user">
-        SELECT * FROM user a
-        INNER JOIN membership b
-        ON a.membership_id = b.id
-        WHERE
-        <trim prefixOverrides="AND">
-            <if test="nickname != null">
-                AND a.name LIKE concat('%', #{nickname}, '%')
-            </if>
-            <if test="membership != null">
-                AND b.name concat('%', #{membership}, '%')
-            </if>
-        </trim>
-    </select>
-
 </mapper>

@@ -9,6 +9,12 @@ public interface FeedDao {
     // 피드 작성
     public int createFeed(Feed feed);
 
+    // 사진 추가
+    public int addPicturesToFeed(Feed feed);
+
+    // 해시 태그 추가
+    public int addHashTagToFeed(Feed feed);
+
     // 피드 전체 조회
     public List<Feed> selectAll();
 

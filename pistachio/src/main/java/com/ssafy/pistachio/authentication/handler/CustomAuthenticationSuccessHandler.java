@@ -3,7 +3,6 @@ package com.ssafy.pistachio.authentication.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.user.User;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,7 @@ import java.io.IOException;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserDao userDao;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomAuthenticationSuccessHandler(UserDao userDao) {
         this.userDao = userDao;
@@ -30,7 +29,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                                         Authentication authentication) throws IOException {
         User user = userDao.getUserByEmail(authentication.getPrincipal().toString());
 
-        request.getSession().setAttribute(user.getName(), user);
+        request.getSession().setAttribute("Login_User", user.getEmail());
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
