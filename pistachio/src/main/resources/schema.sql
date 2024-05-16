@@ -34,6 +34,10 @@ CREATE TABLE donate_project
     REFERENCES membership(id)
 );
 
+-- 기부 프로젝트 테이블에 기본값 추가 - 1 : 일반
+INSERT INTO donate_project(agency_id, name, description, current_donation_amount, target_donation_amount, start_time, end_time) VALUES (1, "일반 게시글", "일반 게시글", 0, 0, date('1970-1-1'), date('1970-1-1'));
+
+
 -- 기부 프로젝트 테이블 조회
 DESC donate_project;
 
@@ -104,6 +108,8 @@ CREATE TABLE affiliated
 -- 소속된 프로젝트 테이블 조회
 DESC affiliated;
 
+/* Second Sprint
+
 -- 위치 정보 테이블 생성
 CREATE TABLE location
 (
@@ -116,21 +122,25 @@ CREATE TABLE location
 -- 위치 정보 테이블 조회
 DESC location;
 
+
+*/
+
 -- 피드 테이블 생성
 CREATE TABLE feed
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    location_id BIGINT NOT NULL,
+    -- location_id BIGINT NOT NULL,
     project_id BIGINT NOT NULL,
     content TEXT,
     like_cnt INTEGER DEFAULT 0,
+    is_boast BOOLEAN NOT NULL DEFAULT false,
     created_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT FK_feed_user_id FOREIGN KEY(user_id)
     REFERENCES user(id),
-    CONSTRAINT FK_location_id FOREIGN KEY(location_id)
-    REFERENCES location(id),
+--     CONSTRAINT FK_location_id FOREIGN KEY(location_id)
+--     REFERENCES location(id),
     CONSTRAINT FK_feed_project_id FOREIGN KEY(project_id)
     REFERENCES donate_project(id)
 );
@@ -143,7 +153,6 @@ CREATE TABLE feed_picture
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     feed_id BIGINT NOT NULL,
-    sequence_number BIGINT NOT NULL,
     url VARCHAR(255) NOT NULL,
     CONSTRAINT FK_feed_picture_feed_id FOREIGN KEY(feed_id)
     REFERENCES feed(id)
@@ -152,6 +161,7 @@ CREATE TABLE feed_picture
 -- 피드 사진 테이블 조회
 DESC feed_picture;
 
+/* Second Sprint
 
 -- 해시태그 테이블 생성
 CREATE TABLE hashtag
@@ -178,6 +188,8 @@ CREATE TABLE feed_hashtag
 
 -- 피드 해시태그 테이블 조회
 DESC feed_hashtag;
+
+*/
 
 
 -- 피드 댓글 테이블 생성
@@ -212,3 +224,5 @@ CREATE TABLE feed_like
 
 -- 피드 해시태그 테이블 조회
 DESC feed_like;
+
+SELECT * FROM USER;

@@ -6,16 +6,19 @@ package com.ssafy.pistachio.model.dto.feed;
 public class FeedPicture {
     Long id;
     Long feedId;
-    Long sequenceNumber;
     String url;
 
     public FeedPicture(Long id,
                        Long feedId,
-                       Long sequenceNumber,
                        String url) {
         this.id = id;
         this.feedId = feedId;
-        this.sequenceNumber = sequenceNumber;
+        this.url = url;
+    }
+
+    public FeedPicture(long feedId
+            , String url) {
+        this.feedId = feedId;
         this.url = url;
     }
 
@@ -35,14 +38,6 @@ public class FeedPicture {
         this.feedId = feedId;
     }
 
-    public Long getSequenceNumber() {
-        return sequenceNumber;
-    }
-
-    public void setSequenceNumber(Long sequenceNumber) {
-        this.sequenceNumber = sequenceNumber;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -56,7 +51,6 @@ public class FeedPicture {
         return "FeedPicture{" +
                 "id=" + id +
                 ", feedId=" + feedId +
-                ", sequenceNumber=" + sequenceNumber +
                 ", url='" + url + '\'' +
                 '}';
     }

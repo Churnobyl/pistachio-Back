@@ -24,6 +24,12 @@ public class FeedComment {
         this.createdTime = createdTime;
     }
 
+    public FeedComment(long feedId
+            , String feedCommentContent) {
+        this.feedId = feedId;
+        this.content = feedCommentContent;
+    }
+
     public Long getId() {
         return id;
     }
