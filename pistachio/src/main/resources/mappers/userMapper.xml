@@ -61,12 +61,17 @@
     <update id="updateUser" parameterType="user">
         UPDATE user
         <set>
-            <if test="password != null">
-                password = #{password},
-            </if>
-            <if test="name != null">
-                name = #{name}
-            </if>
+            <trim suffixOverrides=",">
+                <if test="password != null">
+                    password = #{password},
+                </if>
+                <if test="name != null">
+                    name = #{name},
+                </if>
+                <if test="userProfile != null">
+                    user_profile = #{userProfile},
+                </if>
+            </trim>
         </set>
         WHERE id = #{id}
     </update>
