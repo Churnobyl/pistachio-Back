@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +28,18 @@ public class AmazonS3Service {
     /**
      * S3로 파일 업로드
      */
-    public List<S3FileDto> uploadFiles(String fileType, List<MultipartFile> multipartFiles) {
+    public List<S3FileDto> uploadFiles(HttpSession session, String fileType, List<MultipartFile> multipartFiles) {
 
         List<S3FileDto> s3files = new ArrayList<>();
 
-        String uploadFilePath = fileType + "/" + getFolderName();
+        String uploadFilePath = null;
+
+        if (fileType.equals("profile")) {
+            uploadFilePath = fileType + "/" + session.getAttribute("Login_User");
+        } else {
+            uploadFilePath = fileType + "/" + getFolderName();
+        }
+
 
         for (MultipartFile multipartFile : multipartFiles) {
 
@@ -74,12 +82,11 @@ public class AmazonS3Service {
     /**
      * S3에 업로드된 파일 삭제
      */
-    public String deleteFile(String uploadFilePath, String uuidFileName) {
+    public String deleteFile(String keyName) {
 
         String result = "success";
 
-        try {
-            String keyName = uploadFilePath + "/" + uuidFileName; // ex) 구분/년/월/일/파일.확장자
+        try {// ex) 구분/년/월/일/파일.확장자
             boolean isObjectExist = amazonS3Client.doesObjectExist(bucketName, keyName);
             if (isObjectExist) {
                 amazonS3Client.deleteObject(bucketName, keyName);
