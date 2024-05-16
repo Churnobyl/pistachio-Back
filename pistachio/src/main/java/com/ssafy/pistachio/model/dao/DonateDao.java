@@ -7,8 +7,6 @@ import com.ssafy.pistachio.model.dto.donate.Membership;
 import java.util.List;
 
 public interface DonateDao {
-
-
     /* 기부 */
 
     // 해당 유저의 기부 전체 조회

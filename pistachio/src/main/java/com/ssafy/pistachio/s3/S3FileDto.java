@@ -3,10 +3,10 @@ package com.ssafy.pistachio.s3;
 import java.io.Serializable;
 
 public class S3FileDto implements Serializable {
-    private String originalFileName;
-    private String uploadFileName;
-    private String uploadFilepath;
-    private String uploadFileUrl;
+    private final String originalFileName;
+    private final String uploadFileName;
+    private final String uploadFilepath;
+    private final String uploadFileUrl;
 
     private S3FileDto(String originalFileName,
                      String uploadFileName,

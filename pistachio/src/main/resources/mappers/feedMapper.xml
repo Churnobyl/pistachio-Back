@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pistachio.model.dao.FeedDao">
+    <!--    피드 작성-->
+    <insert id="createFeed" parameterType="feedRequest" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO feed
+        (user_id, project_id, content)
+        VALUES
+        (#{userId}, #{projectId}, #{content})
+    </insert>
+
+    <!--    사진 추가-->
+    <insert id="addPicturesToFeed" parameterType="list">
+        INSERT INTO feed_picture
+        (feed_id, url)
+        VALUES
+        <foreach collection="list" item="item" separator=" , ">
+            (#{item.feedId}, #{item.url})
+        </foreach>
+    </insert>
+
+    <!--    피드 전체 조회-->
+    <select id="selectAll" resultType="hashmap">
+        SELECT
+        f.id AS feed_id,
+        f.user_id,
+        f.project_id,
+        f.content,
+        f.like_cnt,
+        f.created_time,
+        f.updated_time,
+        f.is_boast,
+        fl.id AS feed_like_id,
+        fl.like_user_no AS like_user_id,
+        fp.id AS feed_picture_id,
+        fp.url AS feed_picture_url,
+        fc.id AS feed_comment_id,
+        fc.content AS feed_comment_content
+        FROM feed f
+        LEFT JOIN feed_like fl ON f.id = fl.feed_id
+        LEFT JOIN feed_picture fp ON f.id = fp.feed_id
+        LEFT JOIN feed_comment fc ON f.id = fc.feed_id
+        ORDER BY feed_picture_id
+    </select>
+
+    <!--    피드 상세 조회-->
+    <select id="getFeed" parameterType="long">
+        SELECT * FROM feed
+        WHERE id = #{feedId}
+    </select>
+
+<!--    피드 사진 조회-->
+    <select id="getPictures" parameterType="long">
+        SELECT * FROM feed_picture
+        WHERE feed_id = #{feedId}
+    </select>
+
+<!--    피드 좋아요 조회-->
+    <select id="getLikesCount" parameterType="long">
+        SELECT * FROM feed_like
+        WHERE feed_id = #{feedId}
+    </select>
+
+<!--    피드 댓글 조회-->
+    <select id="getComments" parameterType="long">
+        SELECT * FROM feed_comment
+        WHERE feed_id = #{feedId}
+    </select>
+
+    <!--    피드 수정-->
+    <update id="updateFeed" parameterType="feed">
+        UPDATE feed
+        <set>
+            <trim suffixOverrides=",">
+                <if test="projectId != null">
+                    project_id = #{projectId},
+                </if>
+                <if test="content != null">
+                    content = #{content},
+                </if>
+            </trim>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!--    피드 삭제-->
+    <delete id="deleteFeed" parameterType="long">
+        DELETE FROM feed
+        WHERE id = #{feedId}
+    </delete>
+</mapper>

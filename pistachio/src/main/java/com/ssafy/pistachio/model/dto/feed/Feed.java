@@ -8,29 +8,36 @@ import java.util.Date;
 public class Feed {
     private Long id;
     private Long userId;
-    private Long locationId;
     private Long projectId;
     private String content;
     private Long likeCnt;
+    private Boolean isBoast;
     private Date createdTime;
     private Date updatedTime;
 
     public Feed(Long id,
                 Long userId,
-                Long locationId,
                 Long projectId,
                 String content,
                 Long likeCnt,
+                Boolean isBoast,
                 Date createdTime,
                 Date updatedTime) {
         this.id = id;
         this.userId = userId;
-        this.locationId = locationId;
         this.projectId = projectId;
         this.content = content;
         this.likeCnt = likeCnt;
+        this.isBoast = isBoast;
         this.createdTime = createdTime;
         this.updatedTime = updatedTime;
+    }
+
+    public Feed(Long id, Long userId, Long projectId, String content) {
+        this.id = id;
+        this.userId = userId;
+        this.projectId = projectId;
+        this.content = content;
     }
 
     public Long getId() {
@@ -47,14 +54,6 @@ public class Feed {
 
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public Long getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(Long locationId) {
-        this.locationId = locationId;
     }
 
     public Long getProjectId() {
@@ -81,6 +80,14 @@ public class Feed {
         this.likeCnt = likeCnt;
     }
 
+    public Boolean getBoast() {
+        return isBoast;
+    }
+
+    public void setBoast(Boolean boast) {
+        isBoast = boast;
+    }
+
     public Date getCreatedTime() {
         return createdTime;
     }
@@ -102,10 +109,10 @@ public class Feed {
         return "Feed{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", locationId=" + locationId +
                 ", projectId=" + projectId +
                 ", content='" + content + '\'' +
                 ", likeCnt=" + likeCnt +
+                ", isBoast=" + isBoast +
                 ", createdTime=" + createdTime +
                 ", updatedTime=" + updatedTime +
                 '}';

@@ -9,14 +9,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/user")
@@ -43,7 +39,13 @@ public class UserController {
 
     @GetMapping("/validate/emails/{email}/exists")
     public ResponseEntity<Boolean> isEmailExist(@PathVariable String email) {
-        return ResponseEntity.ok(userService.checkEmailDuplicate(email));
+        boolean result = userService.checkEmailDuplicate(email);
+
+        if (!result) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/validate/names/{name}/exists")
@@ -136,4 +138,6 @@ public class UserController {
         userService.modifyUser(dbUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }
