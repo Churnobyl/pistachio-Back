@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
   pull_request:
-    branches: [ "develop" ]
+    branches: ["develop"]
 
 permissions:
   contents: read
@@ -38,69 +38,69 @@ jobs:
           --health-retries=3
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
 
-    - name: Cache Maven repository
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: |
-          ${{ runner.os }}-maven-
+      - name: Cache Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-    - name: Create application-SECRET.properties
-      run: |
-        echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./pistachio/src/main/resources/application-SECRET.properties
+      - name: Create application-SECRET.properties
+        run: |
+          echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./pistachio/src/main/resources/application-SECRET.properties
 
-    - name: Download wait-for-it.sh
-      run: |
-        curl -o wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-        chmod +x wait-for-it.sh
+      - name: Download wait-for-it.sh
+        run: |
+          curl -o wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+          chmod +x wait-for-it.sh
 
-    - name: Wait for MySQL and Redis to be ready
-      run: ./wait-for-it.sh database:3306 -- echo "MySQL is up" && ./wait-for-it.sh redis:6379 -- echo "Redis is up"
+      - name: Wait for MySQL and Redis to be ready
+        run: ./wait-for-it.sh database:3306 -- echo "MySQL is up" && ./wait-for-it.sh redis:6379 -- echo "Redis is up"
 
-    - name: Build with Maven
-      run: mvn -B clean package --file ./pistachio/pom.xml
-      env:
-        SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pistachio
-        SPRING_DATASOURCE_USERNAME: root
-        SPRING_DATASOURCE_PASSWORD: ssafy
-        SPRING_REDIS_HOST: localhost
-        SPRING_REDIS_PORT: 6379
+      - name: Build with Maven
+        run: mvn -B clean package --file ./pistachio/pom.xml
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pistachio
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: ssafy
+          SPRING_REDIS_HOST: localhost
+          SPRING_REDIS_PORT: 6379
 
-    - name: Copy JAR to build context
-      run: cp ./pistachio/target/*.jar ./pistachio/app.jar
+      - name: Copy JAR to build context
+        run: cp ./pistachio/target/*.jar ./pistachio/app.jar
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Build and push Docker image
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: ./pistachio
-        push: true
-        tags: churnobyl/pistachio:latest
+      - name: Build and push Docker image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./pistachio
+          push: true
+          tags: churnobyl/pistachio:latest
 
-    - name: Image digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
 
   deploy:
     needs: build-and-test
@@ -108,102 +108,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-    - name: Deploy to EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
-          # Docker 및 Docker Compose 설치
-          sudo apt-get update
-          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-          sudo apt-get update
-          sudo apt-get install -y docker-ce docker-compose
-          sudo usermod -aG docker $USER
-          sudo systemctl enable docker
-          sudo systemctl start docker
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            # Docker 및 Docker Compose 설치
+            sudo apt-get update
+            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-compose
+            sudo usermod -aG docker $USER
+            sudo systemctl enable docker
+            sudo systemctl start docker
 
-          # docker-compose.yml 및 nginx.conf 복사
-          mkdir -p ~/deploy
-          cat > ~/deploy/docker-compose.yml << 'COMPOSE_EOF'
-version: '3.8'
-services:
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - app
-
-  app:
-    image: churnobyl/pistachio:latest
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/pistachio?useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ssafy
-    ports:
-      - "8080:8080"
-
-  database:
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: pistachio
-      MYSQL_ROOT_PASSWORD: ssafy
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-
-volumes:
-  mysql-data:
-  redis-data:
-COMPOSE_EOF
-          echo "docker-compose.yml 생성 완료"
-
-          cat > ~/deploy/nginx.conf << 'NGINX_EOF'
-events {}
-
-http {
-    upstream app {
-        server app:8080;
-    }
-
-    server {
-        listen 80;
-
-        location / {
-            proxy_pass http://app;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-    }
-}
-NGINX_EOF
-          echo "nginx.conf 생성 완료"
-
-          # Docker Compose로 애플리케이션 배포
-          cd ~/deploy
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d
-          echo "Docker Compose로 애플리케이션 배포 완료"
-        EOF
+            cd ~/deploy
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
+            
+            EOF
