@@ -131,6 +131,9 @@ jobs:
           sudo systemctl enable docker
           sudo systemctl start docker
 
+          docker ps -q --filter "name=deploy_" | xargs -r docker stop
+          docker ps -a -q --filter "name=deploy_" | xargs -r docker rm
+
           # Docker Compose로 애플리케이션 배포
           cd ~/deploy
           docker-compose down
