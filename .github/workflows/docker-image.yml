@@ -120,6 +120,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            # Docker 및 Docker Compose 설치
             sudo apt-get update
             sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
             curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -129,8 +130,12 @@ jobs:
             sudo usermod -aG docker $USER
             sudo systemctl enable docker
             sudo systemctl start docker
+            docker ps -q --filter "name=deploy_" | xargs -r docker stop
+            docker ps -a -q --filter "name=deploy_" | xargs -r docker rm
+            # Docker Compose로 애플리케이션 배포
             cd ~/deploy
             docker-compose down
             docker-compose pull
             docker-compose up -d
+            echo "Docker Compose로 애플리케이션 배포 완료"
           EOF
