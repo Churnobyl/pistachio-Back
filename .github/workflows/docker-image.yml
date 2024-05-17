@@ -77,7 +77,7 @@ jobs:
         SPRING_REDIS_PORT: 6379
 
     - name: Copy JAR to build context
-      run: cp ./pistachio/target/*.jar ./app.jar
+      run: cp ./pistachio/target/*.jar ./pistachio/app.jar
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -133,7 +133,7 @@ jobs:
 
           # docker-compose.yml 및 nginx.conf 복사
           mkdir -p ~/deploy
-          cat > ~/deploy/docker-compose.yml << 'COMPOSE_EOF'
+          cat << 'COMPOSE_EOF' > ~/deploy/docker-compose.yml
           version: '3.8'
           services:
             nginx:
@@ -175,8 +175,9 @@ jobs:
             mysql-data:
             redis-data:
           COMPOSE_EOF
+          echo "docker-compose.yml 생성 완료"
 
-          cat > ~/deploy/nginx.conf << 'NGINX_EOF'
+          cat << 'NGINX_EOF' > ~/deploy/nginx.conf
           events {}
 
           http {
@@ -197,10 +198,12 @@ jobs:
               }
           }
           NGINX_EOF
+          echo "nginx.conf 생성 완료"
 
           # Docker Compose로 애플리케이션 배포
           cd ~/deploy
           docker-compose down
           docker-compose pull
           docker-compose up -d
+          echo "Docker Compose로 애플리케이션 배포 완료"
         EOF
