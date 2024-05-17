@@ -59,6 +59,11 @@ jobs:
       run: |
         echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./pistachio/src/main/resources/application-SECRET.properties
 
+    - name: Download wait-for-it.sh
+      run: |
+        curl -o wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+        chmod +x wait-for-it.sh
+
     - name: Wait for MySQL and Redis to be ready
       run: ./wait-for-it.sh database:3306 -- echo "MySQL is up" && ./wait-for-it.sh redis:6379 -- echo "Redis is up"
 
