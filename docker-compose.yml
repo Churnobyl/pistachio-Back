@@ -17,13 +17,17 @@ services:
       MYSQL_DATABASE: pistachio
       MYSQL_ROOT_HOST: "root"
       MYSQL_ROOT_PASSWORD: "ssafy"
-      MYSQL_USER : "root"
-      MYSQL_PASSWORD : "ssafy"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "ssafy"
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    command:
+      [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
     networks:
       - pistachio_default
 
@@ -37,14 +41,10 @@ services:
     networks:
       - pistachio_default
 
-
   application:
     container_name: docker-compose-test
     restart: on-failure
-#    image: churnobyl/pistachio:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: churnobyl/pistachio:latest
     ports:
       - "8080:8080"
     environment:
