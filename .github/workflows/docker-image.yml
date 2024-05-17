@@ -131,13 +131,10 @@ jobs:
           sudo systemctl enable docker
           sudo systemctl start docker
 
-          docker ps -q --filter "name=deploy_" | xargs -r docker stop
-          docker ps -a -q --filter "name=deploy_" | xargs -r docker rm
+          docker stop $(docker ps -a -q)
+          docker rm $(docker ps -a -q)
+          docker network prune -f
+          docker volume prune -f
 
-          # Docker Compose로 애플리케이션 배포
-          cd ~/deploy
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d
-          echo "Docker Compose로 애플리케이션 배포 완료"
+          docker run -d --name pistachio_backend -p 80:80 -p 3306:3306 -p 6379:6379 churnobyl/pistachio:latest
         EOF
