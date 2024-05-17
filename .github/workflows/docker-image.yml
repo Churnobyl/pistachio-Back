@@ -13,32 +13,6 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: testdb
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpassword
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
     - uses: actions/checkout@v4
 
@@ -49,7 +23,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-        
+
     - name: Cache Maven repository
       uses: actions/cache@v2
       with:
@@ -62,11 +36,24 @@ jobs:
       run: |
         echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./pistachio/src/main/resources/application-SECRET.properties
 
+    - name: Set up Docker Compose
+      run: |
+        docker-compose -f ./pistachio/docker-compose.yml up -d
+        docker-compose -f ./pistachio/docker-compose.yml ps
+
     - name: Wait for MySQL to be ready
-      run: docker run --rm --network host appropriate/wait-for-it localhost:3306 -t 60
+      run: |
+        while ! docker-compose exec mysql mysqladmin ping -h localhost --silent; do
+          echo "Waiting for MySQL..."
+          sleep 5
+        done
 
     - name: Wait for Redis to be ready
-      run: docker run --rm --network host appropriate/wait-for-it localhost:6379 -t 60
+      run: |
+        while ! docker-compose exec redis redis-cli ping; do
+          echo "Waiting for Redis..."
+          sleep 5
+        done
 
     - name: Build with Maven
       run: mvn -X -B package --file ./pistachio/pom.xml
