@@ -10,13 +10,38 @@ permissions:
   contents: read
 
 jobs:
-  build-docker-image:
+  build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: pistachio
+          MYSQL_USER: root
+          MYSQL_PASSWORD: ssafy
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
     - uses: actions/checkout@v4
 
-    # 1. Java 17 세팅
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
@@ -36,11 +61,6 @@ jobs:
       run: |
         echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./pistachio/src/main/resources/application-SECRET.properties
 
-    - name: Set up Docker Compose
-      run: |
-        docker-compose -f ./pistachio/docker-compose.yml up -d
-        docker-compose -f ./pistachio/docker-compose.yml ps
-
     - name: Wait for MySQL to be ready
       run: |
         while ! docker-compose exec mysql mysqladmin ping -h localhost --silent; do
@@ -56,13 +76,16 @@ jobs:
         done
 
     - name: Build with Maven
-      run: mvn -X -B package --file ./pistachio/pom.xml
+      run: mvn -B clean package --file ./pistachio/pom.xml
       env:
-        SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/testdb
-        SPRING_DATASOURCE_USERNAME: testuser
-        SPRING_DATASOURCE_PASSWORD: testpassword
+        SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pistachio
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: ssafy
         SPRING_REDIS_HOST: localhost
         SPRING_REDIS_PORT: 6379
+
+    - name: Copy JAR to build context
+      run: cp ./pistachio/target/*.jar ./app.jar
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -76,7 +99,7 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push
+    - name: Build and push Docker image
       id: docker_build
       uses: docker/build-push-action@v2
       with:
@@ -88,7 +111,7 @@ jobs:
       run: echo ${{ steps.docker_build.outputs.digest }}
 
   deploy:
-    needs: build-docker-image
+    needs: build-and-test
     name: Deploy
     runs-on: [ self-hosted, label-example-be ]
     steps:
