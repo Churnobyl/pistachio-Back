@@ -1,5 +1,6 @@
-application-SECRET.properties
-application-DEV.properties
+src/main/resources/application-LOCAL.properties
+application-GITHUBACTIONS.properties
+application-DEPLOY.properties
 
 HELP.md
 target/
