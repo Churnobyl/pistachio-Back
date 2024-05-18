@@ -1,8 +1,3 @@
--- Default Setting
-DROP DATABASE IF EXISTS pistachio;
-CREATE DATABASE pistachio;
-USE pistachio;
-
 -- 소속 테이블 생성
 CREATE TABLE membership
 (
@@ -13,10 +8,6 @@ CREATE TABLE membership
 
 -- 소속 테이블에 기본값 추가 - 1 : 일반
 INSERT INTO membership(name) VALUES ("일반");
-
--- 소속 테이블 확인
-SELECT * FROM membership;
-
 
 -- 기부 프로젝트 테이블 생성
 CREATE TABLE donate_project
@@ -37,11 +28,6 @@ CREATE TABLE donate_project
 -- 기부 프로젝트 테이블에 기본값 추가 - 1 : 일반
 INSERT INTO donate_project(agency_id, name, description, current_donation_amount, target_donation_amount, start_time, end_time) VALUES (1, "일반 게시글", "일반 게시글", 0, 0, date('1970-1-1'), date('1970-1-1'));
 
-
--- 기부 프로젝트 테이블 조회
-DESC donate_project;
-
-
 -- 유저 테이블 생성
 CREATE TABLE user
 (
@@ -57,9 +43,6 @@ CREATE TABLE user
     REFERENCES membership(id)
 );
 
--- 유저 테이블 조회
-DESC user;
-
 -- 팔로우 테이블 생성
 CREATE TABLE follow
 (
@@ -71,9 +54,6 @@ CREATE TABLE follow
     CONSTRAINT FK_followed_id FOREIGN KEY(followed_id)
     REFERENCES user(id) ON DELETE CASCADE
 );
-
--- 팔로우 테이블 조회
-DESC follow;
 
 -- 기부 테이블 생성
 CREATE TABLE donation
@@ -89,10 +69,6 @@ CREATE TABLE donation
     REFERENCES user(id)
 );
 
--- 기부 테이블 조회
-DESC donation;
-
-
 -- 소속된 프로젝트 테이블 생성
 CREATE TABLE affiliated
 (
@@ -104,9 +80,6 @@ CREATE TABLE affiliated
     CONSTRAINT FK_affiliated_project_id FOREIGN KEY(project_id)
     REFERENCES donate_project(id)
 );
-
--- 소속된 프로젝트 테이블 조회
-DESC affiliated;
 
 /* Second Sprint
 
@@ -145,9 +118,6 @@ CREATE TABLE feed
     REFERENCES donate_project(id)
 );
 
--- 피드 테이블 조회
-DESC feed;
-
 -- 피드 사진 테이블 생성
 CREATE TABLE feed_picture
 (
@@ -157,9 +127,6 @@ CREATE TABLE feed_picture
     CONSTRAINT FK_feed_picture_feed_id FOREIGN KEY(feed_id)
     REFERENCES feed(id)
 );
-
--- 피드 사진 테이블 조회
-DESC feed_picture;
 
 /* Second Sprint
 
@@ -206,10 +173,6 @@ CREATE TABLE feed_comment
     REFERENCES user(id)
 );
 
--- 피드 댓글 테이블 조회
-DESC feed_comment;
-
-
 -- 피드 좋아요 테이블 생성
 CREATE TABLE feed_like
 (
@@ -221,8 +184,3 @@ CREATE TABLE feed_like
     CONSTRAINT FK_feed_like_like_user_no FOREIGN KEY(like_user_no)
     REFERENCES user(id)
 );
-
--- 피드 해시태그 테이블 조회
-DESC feed_like;
-
-SELECT * FROM USER;
