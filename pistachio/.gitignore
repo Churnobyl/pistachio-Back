@@ -1,4 +1,5 @@
 application-SECRET.properties
+application-DEV.properties
 
 HELP.md
 target/
