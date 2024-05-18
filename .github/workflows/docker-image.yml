@@ -65,15 +65,15 @@ jobs:
           chmod +x wait-for-it.sh
 
       - name: Wait for MySQL and Redis to be ready
-        run: ./wait-for-it.sh database:3306 -- echo "MySQL is up" && ./wait-for-it.sh redis:6379 -- echo "Redis is up"
+        run: ./wait-for-it.sh localhost:3306 -- echo "MySQL is up" && ./wait-for-it.sh localhost:6379 -- echo "Redis is up"
 
       - name: Build with Maven
-        run: mvn -B clean package --file ./pistachio/pom.xml
+        run: mvn -B clean package -DskipTests --file ./pistachio/pom.xml
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/pistachio
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/pistachio
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ssafy
-          SPRING_REDIS_HOST: redis
+          SPRING_REDIS_HOST: localhost
           SPRING_REDIS_PORT: 6379
 
       - name: Copy JAR to build context
