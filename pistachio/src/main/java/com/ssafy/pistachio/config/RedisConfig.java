@@ -1,5 +1,7 @@
 package com.ssafy.pistachio.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +15,18 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 800)
 public class RedisConfig {
 
-//    @Value("${spring.data.redis.host}")
-    private String host = "0.0.0.0";
+    private static final Logger logger = LoggerFactory.getLogger(RedisConfig.class);
+
+    @Value("${spring.data.redis.host}")
+    private String host;
 
     @Value("${spring.data.redis.port}")
     private int port;
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
+        logger.info("Redis Host: {}", host);
+        logger.info("Redis Port: {}", port);
         return new LettuceConnectionFactory(host, port);
     }
 
