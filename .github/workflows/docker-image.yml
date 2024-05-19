@@ -73,8 +73,8 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/pistachio
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ssafy
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
+          SPRING_REDIS_HOST: redis
+          SPRING_REDIS_PORT: 6379
 
       - name: Copy JAR to build context
         run: cp ./pistachio/target/*.jar ./pistachio/app.jar
