@@ -13,10 +13,10 @@ public class PistachioApplication implements CommandLineRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(PistachioApplication.class);
 
-	@Value("${spring.redis.host}")
+	@Value("${spring.data.redis.host}")
 	private String redisHost;
 
-	@Value("${spring.redis.port}")
+	@Value("${spring.data.redis.port}")
 	private int redisPort;
 
 	public static void main(String[] args) {
