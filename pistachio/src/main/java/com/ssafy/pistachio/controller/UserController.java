@@ -1,5 +1,6 @@
 package com.ssafy.pistachio.controller;
 
+import com.ssafy.pistachio.model.dto.mail.EmailRequestDto;
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.service.UserService;
@@ -51,6 +52,12 @@ public class UserController {
     @GetMapping("/validate/names/{name}/exists")
     public ResponseEntity<Boolean> isNameExist(@PathVariable String name) {
         return ResponseEntity.ok(userService.checkNameDuplicate(name));
+    }
+
+    @PostMapping("/validate/emails")
+    public ResponseEntity<Boolean> authEmails(@RequestBody @Valid EmailRequestDto emailRequestDto) {
+        userService.authEmail(emailRequestDto);
+        return ResponseEntity.ok().build();
     }
 
     /* 추후 다시 확인 - 검색 로직 */

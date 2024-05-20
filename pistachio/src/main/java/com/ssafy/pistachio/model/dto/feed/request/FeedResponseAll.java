@@ -3,6 +3,7 @@ package com.ssafy.pistachio.model.dto.feed.request;
 import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
+import com.ssafy.pistachio.model.dto.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +13,23 @@ public class FeedResponseAll {
     private final Feed feed;
     private List<FeedPicture> feedPictures;
     private List<FeedComment> feedComment;
+    private User user;
 
     public FeedResponseAll(Feed feed,
                            List<FeedPicture> feedPictures,
-                           List<FeedComment> feedComment) {
+                           List<FeedComment> feedComment,
+                           User user) {
         this.feed = feed;
         this.feedPictures = feedPictures;
         this.feedComment = feedComment;
+        this.user = user;
     }
 
     public static class Builder {
         private Feed feed;
         private List<FeedPicture> feedPictures = new ArrayList<>();
         private List<FeedComment> feedComment = new ArrayList<>();
+        private User user;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -41,11 +46,17 @@ public class FeedResponseAll {
             return this;
         }
 
+        public Builder user(final User user) {
+            this.user = user;
+            return this;
+        }
+
         public FeedResponseAll build() {
             return new FeedResponseAll(
                     this.feed,
                     this.feedPictures,
-                    this.feedComment);
+                    this.feedComment,
+                    this.user);
         }
     }
 
@@ -65,12 +76,17 @@ public class FeedResponseAll {
         return feedComment;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public String toString() {
         return "FeedResponse{" +
                 "feed=" + feed +
                 ", feedPictures=" + feedPictures +
                 ", feedComment=" + feedComment +
+                ", user=" + user +
                 '}';
     }
 }

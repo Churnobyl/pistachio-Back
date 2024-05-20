@@ -30,6 +30,7 @@ CREATE TABLE user
     email VARCHAR(128) NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(64) NOT NULL,
+    pista BIGINT NOT NULL DEFAULT 0,
     user_profile VARCHAR(255),
     is_admin BOOL NOT NULL DEFAULT false,
     is_activate BOOL NOT NULL DEFAULT true,

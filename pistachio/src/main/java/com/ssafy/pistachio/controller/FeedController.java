@@ -1,8 +1,5 @@
 package com.ssafy.pistachio.controller;
 
-import com.ssafy.pistachio.model.dto.feed.Feed;
-import com.ssafy.pistachio.model.dto.feed.FeedLike;
-import com.ssafy.pistachio.model.dto.feed.FeedPicture;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
 import com.ssafy.pistachio.model.dto.feed.request.FeedResponse;
 import com.ssafy.pistachio.model.dto.feed.request.FeedResponseAll;
@@ -18,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -47,13 +45,13 @@ public class FeedController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getFeed(HttpSession session) {
+    public ResponseEntity<?> getAllFeed(HttpSession session) {
         List<FeedResponseAll> responseList = feedService.getAll();
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
     @GetMapping("/{feedId}")
-    public ResponseEntity<?> getFeed(HttpSession session, @PathVariable("feedId") long feedId) {
+    public ResponseEntity<?> getOneFeed(HttpSession session, @PathVariable("feedId") long feedId) {
         FeedResponse response = feedService.getOne(feedId);
 
         if (response == null) {
@@ -62,4 +60,61 @@ public class FeedController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PatchMapping("/{feedId}")
+    public ResponseEntity<?> modifyFeed(HttpSession session,
+                                        @PathVariable("feedId") long feedId,
+                                        @RequestPart(value = "feedRequest") FeedRequest feedRequest,
+                                        @RequestPart(value = "newPictures", required = false) List<MultipartFile> newMultipartFiles,
+                                        @RequestPart(value = "existingPictureUrls", required = false) List<String> existingPictureUrls) {
+        FeedResponse dbFeed = feedService.getOne(feedId);
+
+        // 해당 피드 없으면 404
+        if (dbFeed == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+
+        // 수정하려는 유저가 글 쓴 유저와 다르면 403
+        if (dbFeed.getFeed().getUserId() != dbUser.getId()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        // 기존의 이미지 URL을 가져옴
+        List<String> oldPictureUrls = dbFeed.getPictureUrls();
+
+        // 기존 이미지와 새로운 이미지 비교
+        List<String> deletePictureUrls = new ArrayList<>(oldPictureUrls);
+        if (existingPictureUrls != null) {
+            deletePictureUrls.removeAll(existingPictureUrls);
+        }
+
+        // 새로운 이미지 URL 목록
+        List<String> newPictureUrls = existingPictureUrls != null ? new ArrayList<>(existingPictureUrls) : new ArrayList<>();
+
+        // 새로운 이미지만 업로드
+        List<S3FileDto> newPictures = new ArrayList<>();
+        if (newMultipartFiles != null && !newMultipartFiles.isEmpty()) {
+            newPictures = amazonS3Service.uploadFiles(session, "feed", newMultipartFiles);
+            for (S3FileDto newPicture : newPictures) {
+                newPictureUrls.add(newPicture.getUploadFileUrl());
+            }
+        }
+
+        // 삭제할 이미지를 S3에서 삭제
+        amazonS3Service.deleteFiles(deletePictureUrls);
+
+        // FeedRequest에 새로운 이미지 URL 추가
+//        feedRequest.setPictureUrls(newPictureUrls);
+
+        // 피드 수정
+//        feedService.modifyFeed(feedId, feedRequest);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
 }

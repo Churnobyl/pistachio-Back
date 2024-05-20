@@ -1,5 +1,6 @@
 package com.ssafy.pistachio.model.service;
 
+import com.ssafy.pistachio.model.dto.mail.EmailRequestDto;
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
 import jakarta.servlet.http.HttpSession;
@@ -22,6 +23,8 @@ public interface UserService {
 
     // 유저 로그인
     public int login(HttpSession session, User user);
+
+    public void authEmail(EmailRequestDto emailRequestDto);
 
     // 유저 이름으로 조회
     public User getUserByName(String name);

@@ -25,6 +25,9 @@ public interface UserDao {
     // 유저 상세 조회
     public User getUserByName(String name);
 
+    // 유저 번호 조회
+    public User getUserById(long id);
+
     // 이메일로 유저 조회
     public User getUserByEmail(String email);
 

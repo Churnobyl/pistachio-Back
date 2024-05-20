@@ -1,6 +1,7 @@
 package com.ssafy.pistachio.model.service;
 
 import com.ssafy.pistachio.model.dao.FeedDao;
+import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
@@ -17,15 +18,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
 public class FeedServiceImpl implements FeedService {
 
     private final FeedDao feedDao;
+    private final UserDao userDao;
 
-    public FeedServiceImpl(FeedDao feedDao) {
+    public FeedServiceImpl(FeedDao feedDao,
+                           UserDao userDao) {
         this.feedDao = feedDao;
+        this.userDao = userDao;
     }
 
     @Transactional
@@ -55,7 +60,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public List<FeedResponseAll> getAll() {
         List<Map<String, Object>> results = feedDao.selectAll();
-        Map<Long, FeedResponseAll.Builder> feedResponseMap = new HashMap<>();
+        Map<Long, FeedResponseAll.Builder> feedResponseMap = new ConcurrentHashMap<>();
 
         for (Map<String, Object> row : results) {
             Long feedId = ((Number) row.get("feed_id")).longValue();
@@ -71,6 +76,8 @@ public class FeedServiceImpl implements FeedService {
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("created_time")),
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("updated_time"))))
             );
+
+            builder.user(userDao.getUserById((Long) row.get("user_id")));
 
             if (row.get("feed_picture_id") != null) {
                 builder.feedPictures(new FeedPicture(((Number) row.get("feed_picture_id")).longValue(), feedId, (String) row.get("feed_picture_url")));

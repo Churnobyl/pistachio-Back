@@ -51,6 +51,12 @@
         WHERE name = #{name}
     </select>
 
+<!--    유저 번호 조회-->
+    <select id="getUserById" parameterType="long">
+        SELECT * FROM user
+        WHERE id = #{id}
+    </select>
+
     <!-- 이메일로 유저 조회 -->
     <select id="getUserByEmail" parameterType="string">
         SELECT * FROM user
