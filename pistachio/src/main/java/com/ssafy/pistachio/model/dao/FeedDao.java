@@ -6,6 +6,7 @@ import com.ssafy.pistachio.model.dto.feed.FeedLike;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
 import com.ssafy.pistachio.model.dto.feed.request.PictureRequest;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -29,6 +30,8 @@ public interface FeedDao {
 //            "LEFT JOIN feed_picture fp ON f.id = fp.feed_id " +
 //            "LEFT JOIN feed_comment fc ON f.id = fc.feed_id")
     public List<Map<String, Object>> selectAll();
+
+    List<Map<String, Object>> selectAllByUser(@Param("userId") Long userId);
 
     // 피드 상세 조회
     public Feed getFeed(long feedId);

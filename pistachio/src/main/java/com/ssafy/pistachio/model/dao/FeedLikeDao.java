@@ -1,21 +1,17 @@
 package com.ssafy.pistachio.model.dao;
 
-import com.ssafy.pistachio.model.dto.feed.Feed;
-import com.ssafy.pistachio.model.dto.feed.FeedLike;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+@Mapper
 public interface FeedLikeDao {
 
-    // 피드 좋아요
-    public int insertFeedLike(FeedLike feedLike);
+    void insertLike(@Param("feedId") Long feedId, @Param("userId") Long userId);
+    void deleteLike(@Param("feedId") Long feedId, @Param("userId") Long userId);
 
-    // 피드 좋아요 취소
-    public int deleteFeedLike(FeedLike feedLike);
-
-    // 각 피드 당 전체 좋아요
-    public int selectAllFeedLikes(Long feedId);
-
-    // 각 유저의 좋아요한 게시물 전체
-    public List<Feed> selectFeedLikes(Long userId);
+    @Select("SELECT feed_id FROM feed_like WHERE like_user_no = #{userId}")
+    List<Long> getLikedFeedIdsByUserId(@Param("userId") Long userId);
 }

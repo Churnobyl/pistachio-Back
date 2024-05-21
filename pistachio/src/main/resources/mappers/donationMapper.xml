@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pistachio.model.dao.DonationDao">
+
+    <!--  단체  -->
+
+<!--    단체 생성-->
+    <insert id="createMembership" parameterType="addMembershipRequest">
+        INSERT INTO membership
+        (name, agency_profile_url)
+        VALUES
+        (#{name}, #{agencyProfileUrl})
+    </insert>
+
+    <!-- 프로젝트 -->
+
+<!--    단체의 프로젝트 생성-->
+    <insert id="createDonateProject" parameterType="addDonateProjectRequest">
+        INSERT INTO donate_project
+        (agency_id, name, description, target_donation_amount, start_time, end_time)
+        VALUES
+        (#{agencyId}, #{name}, #{description}, #{targetDonationAmount}, #{startTime}, #{endTime})
+    </insert>
+
+
+</mapper>

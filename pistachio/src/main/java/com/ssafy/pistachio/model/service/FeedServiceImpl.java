@@ -1,9 +1,6 @@
 package com.ssafy.pistachio.model.service;
 
-import com.ssafy.pistachio.model.dao.CommentDao;
-import com.ssafy.pistachio.model.dao.FeedDao;
-import com.ssafy.pistachio.model.dao.FeedPictureDao;
-import com.ssafy.pistachio.model.dao.UserDao;
+import com.ssafy.pistachio.model.dao.*;
 import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.comment.request.AddCommentRequest;
 import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
@@ -30,14 +27,19 @@ public class FeedServiceImpl implements FeedService {
     private final UserDao userDao;
     private final CommentDao commentDao;
     private final FeedPictureDao feedPictureDao;
+    private final FeedLikeDao feedLikeDao;
 
     public FeedServiceImpl(FeedDao feedDao,
                            UserDao userDao,
-                           CommentDao commentDao, FeedPictureDao feedPictureDao) {
+                           CommentDao commentDao,
+                           FeedPictureDao feedPictureDao,
+                           FeedLikeDao feedLikeDao
+    ) {
         this.feedDao = feedDao;
         this.userDao = userDao;
         this.commentDao = commentDao;
         this.feedPictureDao = feedPictureDao;
+        this.feedLikeDao = feedLikeDao;
     }
 
     @Transactional
@@ -64,10 +66,19 @@ public class FeedServiceImpl implements FeedService {
         return (int) feedId;
     }
 
-    @Override
-    public List<FeedResponseAll> getAll() {
-        List<Map<String, Object>> results = feedDao.selectAll();
+    @Transactional
+    public List<FeedResponseAll> getAll(Long userId) {
+        List<Long> likedFeedIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
+        return processFeeds(feedDao.selectAll(), likedFeedIds);
+    }
 
+    @Transactional
+    public List<FeedResponseAll> getAllByUser(Long userId) {
+        List<Long> likedFeedIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
+        return processFeeds(feedDao.selectAllByUser(userId), likedFeedIds);
+    }
+
+    private List<FeedResponseAll> processFeeds(List<Map<String, Object>> results, List<Long> likedFeedIds) {
         if (results == null) {
             return null;
         }
@@ -87,6 +98,7 @@ public class FeedServiceImpl implements FeedService {
                                     row.get("is_boast").equals("1"),
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("created_time")),
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("updated_time"))))
+                            .isUserLike(likedFeedIds.contains(feedId))
             );
 
             builder.userResponse(userDao.getUserByIdForResponse((Long) row.get("user_id")));
@@ -127,7 +139,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public FeedResponse getOne(long feedId) {
+    public FeedResponse getOne(long feedId, Long userId) {
         Feed feed = feedDao.getFeed(feedId);
         if (feed == null) {
             return null;
@@ -135,12 +147,14 @@ public class FeedServiceImpl implements FeedService {
 
         List<FeedPicture> feedPictures = feedDao.getPictures(feedId);
         List<CommentResponse> feedComments = commentDao.getCommentByFeedId(feedId);
+        boolean isUserLike = feedLikeDao.getLikedFeedIdsByUserId(userId).contains(feedId);
 
         return FeedResponse.builder()
                 .feed(feed)
                 .feedPictures(feedPictures)
                 .feedComment(feedComments)
                 .userResponse(userDao.getUserByIdForResponse(feed.getUserId()))
+                .isUserLike(isUserLike)
                 .build();
     }
 
@@ -185,5 +199,26 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public int deleteComment(long commentId) {
         return commentDao.deleteComment(commentId);
+    }
+
+    @Transactional
+    public void batchUpdateLikes(Long userId, Map<Long, Boolean> likeStatusMap) {
+        // 현재 유저의 모든 좋아요 상태를 가져옴
+        List<Long> currentLikedPostIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
+
+        for (Map.Entry<Long, Boolean> entry : likeStatusMap.entrySet()) {
+            Long feedId = entry.getKey();
+            Boolean isLiked = entry.getValue();
+
+            boolean currentlyLiked = currentLikedPostIds.contains(feedId);
+
+            if (isLiked && !currentlyLiked) {
+                // 좋아요를 추가
+                feedLikeDao.insertLike(feedId, userId);
+            } else if (!isLiked && currentlyLiked) {
+                // 좋아요를 삭제
+                feedLikeDao.deleteLike(feedId, userId);
+            }
+        }
     }
 }

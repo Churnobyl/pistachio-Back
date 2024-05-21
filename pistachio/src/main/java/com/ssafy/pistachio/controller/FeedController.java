@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/feed")
@@ -38,7 +39,8 @@ public class FeedController {
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> writeFeed(HttpSession session,
                                   @RequestPart(value = "feedRequest") FeedRequest feedRequest,
-                                  @RequestPart(value = "pictures") List<MultipartFile> multipartFiles) {
+                                  @RequestPart(value = "pictures") List<MultipartFile> multipartFiles
+    ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
         feedRequest.setUserId(dbUser.getId());
@@ -54,13 +56,28 @@ public class FeedController {
 
     @GetMapping("")
     public ResponseEntity<?> getAllFeed(HttpSession session) {
-        List<FeedResponseAll> responseList = feedService.getAll();
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+
+        List<FeedResponseAll> responseList = feedService.getAll(dbUser.getId());
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
+    @GetMapping("/myFeed")
+    public ResponseEntity<List<FeedResponseAll>> getFeedsByUser(HttpSession session) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        return ResponseEntity.ok(feedService.getAllByUser(dbUser.getId()));
+    }
+
     @GetMapping("/{feedId}")
-    public ResponseEntity<?> getOneFeed(HttpSession session, @PathVariable("feedId") long feedId) {
-        FeedResponse response = feedService.getOne(feedId);
+    public ResponseEntity<?> getOneFeed(HttpSession session,
+                                        @PathVariable("feedId") long feedId
+    ) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+
+        FeedResponse response = feedService.getOne(feedId, dbUser.getId());
 
         if (response == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -74,16 +91,16 @@ public class FeedController {
                                         @PathVariable("feedId") long feedId,
                                         @RequestPart(value = "feedRequest") FeedRequest feedRequest,
                                         @RequestPart(value = "newPictures", required = false) List<MultipartFile> newMultipartFiles,
-                                        @RequestPart(value = "existingPictureUrls", required = false) List<String> existingPictureUrls) {
-        FeedResponse dbFeed = feedService.getOne(feedId);
+                                        @RequestPart(value = "existingPictureUrls", required = false) List<String> existingPictureUrls
+    ) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        FeedResponse dbFeed = feedService.getOne(feedId, dbUser.getId());
 
         // 해당 피드 없으면 404
         if (dbFeed == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        String email = (String) session.getAttribute("Login_User");
-        User dbUser = userService.getUserByEmail(email);
 
         // 수정하려는 유저가 글 쓴 유저와 다르면 403
         if (dbFeed.getFeed().getUserId() != dbUser.getId()) {
@@ -125,10 +142,12 @@ public class FeedController {
 
     @Transactional
     @DeleteMapping("/{feedId}")
-    public ResponseEntity<?> deleteFeed(HttpSession session, @PathVariable("feedId") Long feedId) {
+    public ResponseEntity<?> deleteFeed(HttpSession session,
+                                        @PathVariable("feedId") Long feedId
+    ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
-        FeedResponse dbFeed = feedService.getOne(feedId);
+        FeedResponse dbFeed = feedService.getOne(feedId, dbUser.getId());
 
         if (dbFeed == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -145,7 +164,10 @@ public class FeedController {
     }
 
     @PostMapping("/{feedId}/comments")
-    public ResponseEntity<?> writeComment(HttpSession session, @PathVariable("feedId") Long feedId, @RequestBody AddCommentRequest addCommentRequest) {
+    public ResponseEntity<?> writeComment(HttpSession session,
+                                          @PathVariable("feedId") Long feedId,
+                                          @RequestBody AddCommentRequest addCommentRequest
+    ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
         addCommentRequest.setCommentUserNo(dbUser.getId());
@@ -160,7 +182,10 @@ public class FeedController {
     }
 
     @DeleteMapping("/{feedId}/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(HttpSession session, @PathVariable("feedId") Long feedId, @PathVariable("commentId") Long commentId) {
+    public ResponseEntity<?> deleteComment(HttpSession session,
+                                           @PathVariable("feedId") Long feedId,
+                                           @PathVariable("commentId") Long commentId
+    ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
         CommentResponse commentResponse = feedService.readComment(commentId);
@@ -172,5 +197,15 @@ public class FeedController {
         feedService.deleteComment(commentId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/likes-update")
+    public ResponseEntity<Void> batchUpdateLikes(HttpSession session,
+                                                 @RequestBody Map<Long, Boolean> likeStatusMap
+    ) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        feedService.batchUpdateLikes(dbUser.getId(), likeStatusMap);
+        return ResponseEntity.ok().build();
     }
 }

@@ -14,15 +14,19 @@ public class FeedResponseAll {
     private List<FeedPicture> feedPictures;
     private List<CommentResponse> commentResponses;
     private UserResponse userResponse;
+    private boolean isUserLike;
 
     public FeedResponseAll(Feed feed,
                            List<FeedPicture> feedPictures,
                            List<CommentResponse> commentResponses,
-                           UserResponse userResponse) {
+                           UserResponse userResponse,
+                           boolean isUserLike
+    ) {
         this.feed = feed;
         this.feedPictures = feedPictures;
         this.commentResponses = commentResponses;
         this.userResponse = userResponse;
+        this.isUserLike = isUserLike;
     }
 
     public static class Builder {
@@ -30,6 +34,7 @@ public class FeedResponseAll {
         private List<FeedPicture> feedPictures = new ArrayList<>();
         private List<CommentResponse> commentResponses = new ArrayList<>();
         private UserResponse userResponse;
+        private boolean isUserLike;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -51,12 +56,18 @@ public class FeedResponseAll {
             return this;
         }
 
+        public Builder isUserLike(final boolean isUserLike) {
+            this.isUserLike = isUserLike;
+            return this;
+        }
+
         public FeedResponseAll build() {
             return new FeedResponseAll(
                     this.feed,
                     this.feedPictures,
                     this.commentResponses,
-                    this.userResponse);
+                    this.userResponse,
+                    this.isUserLike);
         }
     }
 
@@ -80,6 +91,10 @@ public class FeedResponseAll {
         return userResponse;
     }
 
+    public boolean isUserLike() {
+        return isUserLike;
+    }
+
     @Override
     public String toString() {
         return "FeedResponse{" +
@@ -87,6 +102,7 @@ public class FeedResponseAll {
                 ", feedPictures=" + feedPictures +
                 ", commentResponses=" + commentResponses +
                 ", userResponse=" + userResponse +
+                ", isUserLike=" + isUserLike +
                 '}';
     }
 }
