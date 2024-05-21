@@ -2,6 +2,7 @@ package com.ssafy.pistachio.authentication;
 
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.service.UserService;
+import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,10 +26,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
+        String email = (String) authentication.getPrincipal();
         String password = authentication.getCredentials().toString();
-
         User user = userService.getUserByEmail(email);
+
+        if (user == null) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Wrong password");

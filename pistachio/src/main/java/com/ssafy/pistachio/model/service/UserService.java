@@ -3,6 +3,8 @@ package com.ssafy.pistachio.model.service;
 import com.ssafy.pistachio.model.dto.mail.EmailRequestDto;
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
+import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
+import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
 public interface UserService {
 
     // 유저 회원가입
-    public int signup(User user);
+    public int signup(AddUserRequest addUserRequest);
 
     // 유저 이름 중복 확인
     public boolean checkNameDuplicate(String name);
@@ -22,7 +24,7 @@ public interface UserService {
     public List<User> search(SearchCondition condition);
 
     // 유저 로그인
-    public int login(HttpSession session, User user);
+    public int login(HttpSession session, UserLoginRequest userLoginRequest);
 
     public void authEmail(EmailRequestDto emailRequestDto);
 

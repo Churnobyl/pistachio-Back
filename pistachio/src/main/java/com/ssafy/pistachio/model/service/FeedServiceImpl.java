@@ -1,23 +1,23 @@
 package com.ssafy.pistachio.model.service;
 
+import com.ssafy.pistachio.model.dao.CommentDao;
 import com.ssafy.pistachio.model.dao.FeedDao;
 import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.comment.FeedComment;
+import com.ssafy.pistachio.model.dto.comment.request.AddCommentRequest;
+import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
-import com.ssafy.pistachio.model.dto.feed.request.FeedResponse;
-import com.ssafy.pistachio.model.dto.feed.request.FeedResponseAll;
+import com.ssafy.pistachio.model.dto.feed.response.FeedResponse;
+import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
 import com.ssafy.pistachio.model.dto.feed.request.PictureRequest;
 import com.ssafy.pistachio.s3.S3FileDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -26,11 +26,14 @@ public class FeedServiceImpl implements FeedService {
 
     private final FeedDao feedDao;
     private final UserDao userDao;
+    private final CommentDao commentDao;
 
     public FeedServiceImpl(FeedDao feedDao,
-                           UserDao userDao) {
+                           UserDao userDao,
+                           CommentDao commentDao) {
         this.feedDao = feedDao;
         this.userDao = userDao;
+        this.commentDao = commentDao;
     }
 
     @Transactional
@@ -77,20 +80,41 @@ public class FeedServiceImpl implements FeedService {
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("updated_time"))))
             );
 
-            builder.user(userDao.getUserById((Long) row.get("user_id")));
+            builder.userResponse(userDao.getUserByIdForResponse((Long) row.get("user_id")));
 
             if (row.get("feed_picture_id") != null) {
-                builder.feedPictures(new FeedPicture(((Number) row.get("feed_picture_id")).longValue(), feedId, (String) row.get("feed_picture_url")));
+                FeedPicture feedPicture = new FeedPicture(
+                        ((Number) row.get("feed_picture_id")).longValue(),
+                        feedId,
+                        (String) row.get("feed_picture_url")
+                );
+                if (!builder.build().getFeedPictures().contains(feedPicture)) {
+                    builder.feedPictures(feedPicture);
+                }
             }
 
             if (row.get("feed_comment_id") != null) {
-                builder.feedComment(new FeedComment(((Number) row.get("feed_comment_id")).longValue(), (String) row.get("feed_comment_content")));
+                CommentResponse commentResponse = new CommentResponse(
+                        ((Number) row.get("feed_comment_id")).longValue(),
+                        feedId,
+                        (String) row.get("feed_comment_content"),
+                        ((Number) row.get("feed_comment_user_id")).longValue(),
+                        (String) row.get("username"),
+                        (String) row.get("userProfile")
+                );
+                if (!builder.build().getCommentResponses().contains(commentResponse)) {
+                    builder.commentResponses(commentResponse);
+                }
             }
         }
 
-        return feedResponseMap.values().stream()
+        List<FeedResponseAll> responseList = feedResponseMap.values().stream()
                 .map(FeedResponseAll.Builder::build)
                 .collect(Collectors.toList());
+
+        Collections.reverse(responseList);
+
+        return responseList;
     }
 
     @Override
@@ -101,7 +125,7 @@ public class FeedServiceImpl implements FeedService {
         }
 
         List<FeedPicture> feedPictures = feedDao.getPictures(feedId);
-        List<FeedComment> feedComments = feedDao.getComments(feedId);
+        List<CommentResponse> feedComments = commentDao.getCommentByFeedId(feedId);
 
         return FeedResponse.builder()
                 .feed(feed)
@@ -118,5 +142,20 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public int deleteFeed(int feedId) {
         return feedDao.deleteFeed(feedId);
+    }
+
+    @Override
+    public int writeComment(AddCommentRequest addCommentRequest) {
+        return commentDao.createComment(addCommentRequest);
+    }
+
+    @Override
+    public CommentResponse readComment(long commentId) {
+        return commentDao.getOneCommentByCommentId(commentId);
+    }
+
+    @Override
+    public int deleteComment(long commentId) {
+        return commentDao.deleteComment(commentId);
     }
 }

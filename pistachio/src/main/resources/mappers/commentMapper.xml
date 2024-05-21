@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pistachio.model.dao.CommentDao">
+    <insert id="createComment" parameterType="addCommentRequest">
+        INSERT INTO feed_comment
+        (feed_id, comment_user_no, content)
+        VALUES
+        (#{feedId}, #{commentUserNo}, #{content})
+    </insert>
+
+    <select id="getOneCommentByCommentId" parameterType="long">
+        SELECT
+        c.id,
+        c.feed_id,
+        c.content,
+        u.id,
+        u.name,
+        u.user_profile
+        FROM feed_comment c
+        LEFT OUTER JOIN user u
+        ON c.comment_user_No = u.id
+        WHERE c.id = #{commentId}
+    </select>
+
+    <select id="getCommentByFeedId" parameterType="long">
+        SELECT
+        c.id,
+        c.feed_id,
+        c.content,
+        u.id,
+        u.name,
+        u.user_profile
+        FROM feed_comment c
+        LEFT OUTER JOIN user u
+        ON c.comment_user_No = u.id
+    </select>
+
+    <delete id="deleteComment" parameterType="long">
+        DELETE FROM feed_comment
+        WHERE id = #{commentId}
+    </delete>
+</mapper>

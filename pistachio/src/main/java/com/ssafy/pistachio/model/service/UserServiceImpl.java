@@ -5,6 +5,8 @@ import com.ssafy.pistachio.mail.RedisUtil;
 import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
+import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
+import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
@@ -42,10 +44,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public int signup(User user) {
-        String encodePassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodePassword);
-        return userDao.createUser(user);
+    public int signup(AddUserRequest addUserRequest) {
+        String encodePassword = passwordEncoder.encode(addUserRequest.getPassword());
+        addUserRequest.setPassword(encodePassword);
+        return userDao.createUser(addUserRequest);
     }
 
     @Override
@@ -77,15 +79,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional(readOnly = true)
     public int login(HttpSession session,
-                     User user) {
+                     UserLoginRequest userloginRequest) {
 
-        if (!user.isPasswordMatch(passwordEncoder, user.getPassword())) {
+        if (!userloginRequest.isPasswordMatch(passwordEncoder, userloginRequest.getPassword())) {
             throw new UsernameNotFoundException("");
         }
 
-        session.setAttribute("Login_User", user.getEmail());
+        session.setAttribute("Login_User", userloginRequest.getEmail());
 
-        return userDao.loginUser(user);
+        return userDao.loginUser(userloginRequest);
     }
 
     @Override
@@ -95,7 +97,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userDao.getUserByEmail(email);
+        User user = userDao.getUserByEmail(email);
+        if (user != null) {
+            List<String> roles = userDao.findRolesByUserId(user.getId());
+            user.setRoles(roles);
+        }
+        return user;
     }
 
     @Override
@@ -110,7 +117,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
         User user = userDao.getUserByEmail(email);
 
         if (user == null) {

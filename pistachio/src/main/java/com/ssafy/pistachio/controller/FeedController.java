@@ -1,8 +1,10 @@
 package com.ssafy.pistachio.controller;
 
+import com.ssafy.pistachio.model.dto.comment.request.AddCommentRequest;
+import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
-import com.ssafy.pistachio.model.dto.feed.request.FeedResponse;
-import com.ssafy.pistachio.model.dto.feed.request.FeedResponseAll;
+import com.ssafy.pistachio.model.dto.feed.response.FeedResponse;
+import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.service.FeedService;
 import com.ssafy.pistachio.model.service.UserService;
@@ -41,7 +43,12 @@ public class FeedController {
         feedRequest.setUserId(dbUser.getId());
         List<S3FileDto> pictures = amazonS3Service.uploadFiles(session, "feed", multipartFiles);
         int result = feedService.writeFeed(feedRequest, pictures);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+
+        if (result == 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("")
@@ -115,6 +122,33 @@ public class FeedController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/{feedId}/comments")
+    public ResponseEntity<?> writeComment(HttpSession session, @PathVariable("feedId") Long feedId, @RequestBody AddCommentRequest addCommentRequest) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        addCommentRequest.setCommentUserNo(dbUser.getId());
+        addCommentRequest.setFeedId(feedId);
+        int result = feedService.writeComment(addCommentRequest);
 
+        if (result == 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{feedId}/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(HttpSession session, @PathVariable("feedId") Long feedId, @PathVariable("commentId") Long commentId) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        CommentResponse commentResponse = feedService.readComment(commentId);
+
+        if (dbUser.getId() != commentResponse.getUserId()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        feedService.deleteComment(commentId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

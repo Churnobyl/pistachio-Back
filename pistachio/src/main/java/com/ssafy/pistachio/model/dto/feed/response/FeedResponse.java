@@ -1,11 +1,11 @@
-package com.ssafy.pistachio.model.dto.feed.request;
+package com.ssafy.pistachio.model.dto.feed.response;
 
 import com.ssafy.pistachio.model.dto.comment.FeedComment;
+import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
 import com.ssafy.pistachio.model.dto.user.User;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,17 +13,17 @@ public class FeedResponse {
 
     private final Feed feed;
     private List<FeedPicture> feedPictures;
-    private List<FeedComment> feedComment;
+    private List<CommentResponse> commentResponses;
     private User user;
     private List<String> pictureUrls;
 
     public FeedResponse(Feed feed,
                         List<FeedPicture> feedPictures,
-                        List<FeedComment> feedComment,
+                        List<CommentResponse> commentResponses,
                         User user) {
         this.feed = feed;
         this.feedPictures = feedPictures;
-        this.feedComment = feedComment;
+        this.commentResponses = commentResponses;
         this.user = user;
         this.pictureUrls = feedPictures.stream()
                 .map(FeedPicture::getUrl)
@@ -33,7 +33,7 @@ public class FeedResponse {
     public static class Builder {
         private Feed feed;
         private List<FeedPicture> feedPictures;
-        private List<FeedComment> feedComment;
+        private List<CommentResponse> commentResponses;
         private User user;
 
         public Builder feed(final Feed feed) {
@@ -46,8 +46,8 @@ public class FeedResponse {
             return this;
         }
 
-        public Builder feedComment(final List<FeedComment> feedComment) {
-            this.feedComment = feedComment;
+        public Builder feedComment(final List<CommentResponse> commentResponse) {
+            this.commentResponses = commentResponse;
             return this;
         }
 
@@ -60,7 +60,7 @@ public class FeedResponse {
             return new FeedResponse(
                     this.feed,
                     this.feedPictures,
-                    this.feedComment,
+                    this.commentResponses,
                     this.user);
         }
     }
@@ -77,8 +77,8 @@ public class FeedResponse {
         return feedPictures;
     }
 
-    public List<FeedComment> getFeedComment() {
-        return feedComment;
+    public List<CommentResponse> getCommentResponses() {
+        return commentResponses;
     }
 
     public List<String> getPictureUrls() { // 새 getter 추가
@@ -94,7 +94,7 @@ public class FeedResponse {
         return "FeedResponse{" +
                 "feed=" + feed +
                 ", feedPictures=" + feedPictures +
-                ", feedComment=" + feedComment +
+                ", commentResponses=" + commentResponses +
                 ", pictureUrls=" + pictureUrls +
                 ", user=" + user +
                 '}';

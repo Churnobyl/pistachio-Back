@@ -1,3 +1,8 @@
+CREATE TABLE role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
 -- 소속 테이블 생성
 CREATE TABLE membership
 (
@@ -27,15 +32,23 @@ CREATE TABLE user
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     membership_id BIGINT,
-    email VARCHAR(128) NOT NULL,
+    email VARCHAR(128) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    name VARCHAR(64) NOT NULL,
-    pista BIGINT NOT NULL DEFAULT 0,
+    name VARCHAR(64) NOT NULL UNIQUE,
+    pista BIGINT DEFAULT 0,
     user_profile VARCHAR(255),
-    is_admin BOOL NOT NULL DEFAULT false,
-    is_activate BOOL NOT NULL DEFAULT true,
+    is_admin BOOL DEFAULT false,
+    is_activate BOOL DEFAULT true,
     CONSTRAINT FK_user_membership_id FOREIGN KEY (membership_id)
     REFERENCES membership(id)
+);
+
+CREATE TABLE user_role (
+    user_id BIGINT,
+    role_id BIGINT,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (role_id) REFERENCES role(id)
 );
 
 -- 팔로우 테이블 생성
