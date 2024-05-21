@@ -6,6 +6,7 @@ import com.ssafy.pistachio.authentication.CustomAuthenticationToken;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,6 +18,12 @@ import java.io.IOException;
 
 public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+    @Value("${frontend.host}")
+    private String frontendUrl;
+
+    @Value("${frontend.port}")
+    private int frontendPort;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomAuthenticationFilter() {
@@ -26,7 +33,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         if (request.getMethod().equals("OPTIONS")) {
-            response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+            response.setHeader("Access-Control-Allow-Origin", "http://" + frontendUrl + ":" + frontendPort);
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
             response.setHeader("Access-Control-Allow-Headers", "*");
             response.setHeader("Access-Control-Allow-Credentials", "true");

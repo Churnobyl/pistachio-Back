@@ -1,8 +1,9 @@
-package com.ssafy.pistachio.model.dto.feed.request;
+package com.ssafy.pistachio.model.dto.feed.response;
 
-import com.ssafy.pistachio.model.dto.comment.FeedComment;
+import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
+import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +12,24 @@ public class FeedResponseAll {
 
     private final Feed feed;
     private List<FeedPicture> feedPictures;
-    private List<FeedComment> feedComment;
+    private List<CommentResponse> commentResponses;
+    private UserResponse userResponse;
 
     public FeedResponseAll(Feed feed,
                            List<FeedPicture> feedPictures,
-                           List<FeedComment> feedComment) {
+                           List<CommentResponse> commentResponses,
+                           UserResponse userResponse) {
         this.feed = feed;
         this.feedPictures = feedPictures;
-        this.feedComment = feedComment;
+        this.commentResponses = commentResponses;
+        this.userResponse = userResponse;
     }
 
     public static class Builder {
         private Feed feed;
         private List<FeedPicture> feedPictures = new ArrayList<>();
-        private List<FeedComment> feedComment = new ArrayList<>();
+        private List<CommentResponse> commentResponses = new ArrayList<>();
+        private UserResponse userResponse;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -36,8 +41,13 @@ public class FeedResponseAll {
             return this;
         }
 
-        public Builder feedComment(final FeedComment feedComment) {
-            this.feedComment.add(feedComment);
+        public Builder commentResponses(final CommentResponse commentResponses) {
+            this.commentResponses.add(commentResponses);
+            return this;
+        }
+
+        public Builder userResponse(final UserResponse userResponse) {
+            this.userResponse = userResponse;
             return this;
         }
 
@@ -45,7 +55,8 @@ public class FeedResponseAll {
             return new FeedResponseAll(
                     this.feed,
                     this.feedPictures,
-                    this.feedComment);
+                    this.commentResponses,
+                    this.userResponse);
         }
     }
 
@@ -61,8 +72,12 @@ public class FeedResponseAll {
         return feedPictures;
     }
 
-    public List<FeedComment> getFeedComment() {
-        return feedComment;
+    public List<CommentResponse> getCommentResponses() {
+        return commentResponses;
+    }
+
+    public UserResponse getUserResponse() {
+        return userResponse;
     }
 
     @Override
@@ -70,7 +85,8 @@ public class FeedResponseAll {
         return "FeedResponse{" +
                 "feed=" + feed +
                 ", feedPictures=" + feedPictures +
-                ", feedComment=" + feedComment +
+                ", commentResponses=" + commentResponses +
+                ", userResponse=" + userResponse +
                 '}';
     }
 }

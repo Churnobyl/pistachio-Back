@@ -1,8 +1,5 @@
 package com.ssafy.pistachio.model.dto.user;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,51 +15,74 @@ import java.util.List;
  */
 public class User implements UserDetails, Serializable {
     private Long id;
-    private Long membership_id;
-
-    @NotBlank(message = "이메일은 필수 입력 값입니다.")
-    @Email
+    private Long membershipId;
     private String email;
-
-    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-//    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\\\W)(?=\\\\S+$).{8,16}\n",
-//            message = "비밀번호는 8~16자 영문 대소문자, 숫자, 특수문자를 사용해 주세요.")
     private String password;
-
-    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,8}$", message = "닉네임은 특수문자를 제외한 2~8자리여야 합니다.")
     private String name;
-
+    private Long pista;
     private String userProfile;
-    private String role;
+    private List<String> roles;
+    private boolean isAdmin;
     private boolean isActivate;
 
     public User(Long id,
-                Long membership_id,
+                Long membershipId,
                 String email,
                 String password,
                 String name,
+                Long pista,
                 String userProfile,
-                String role,
+                boolean isAdmin,
                 boolean isActivate) {
         this.id = id;
-        this.membership_id = membership_id;
+        this.membershipId = membershipId;
         this.email = email;
         this.password = password;
         this.name = name;
+        this.pista = pista;
         this.userProfile = userProfile;
-        this.role = role;
+        this.roles = new ArrayList<>();
+        this.isAdmin = isAdmin;
         this.isActivate = isActivate;
-    }
-
-    public boolean isPasswordMatch(PasswordEncoder passwordEncoder, String password) {
-        return passwordEncoder.matches(password, this.password);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(role));
+        if (roles != null) {
+            for (String role : roles) {
+                if (role != null && !role.trim().isEmpty()) {
+                    authorities.add(new SimpleGrantedAuthority(role));
+                } else {
+                    throw new IllegalArgumentException("Role cannot be null or empty");
+                }
+            }
+        }
         return authorities;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getMembershipId() {
+        return membershipId;
+    }
+
+    public void setMembershipId(Long membershipId) {
+        this.membershipId = membershipId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -71,7 +91,7 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public String getUsername() {
-        return name;
+        return email;
     }
 
     @Override
@@ -94,30 +114,6 @@ public class User implements UserDetails, Serializable {
         return isActivate;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getMembership_id() {
-        return membership_id;
-    }
-
-    public void setMembership_id(Long membership_id) {
-        this.membership_id = membership_id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -130,6 +126,14 @@ public class User implements UserDetails, Serializable {
         this.name = name;
     }
 
+    public Long getPista() {
+        return pista;
+    }
+
+    public void setPista(Long pista) {
+        this.pista = pista;
+    }
+
     public String getUserProfile() {
         return userProfile;
     }
@@ -138,12 +142,20 @@ public class User implements UserDetails, Serializable {
         this.userProfile = userProfile;
     }
 
-    public String getRole() {
-        return role;
+    public List<String> getRoles() {
+        return roles;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public boolean isActivate() {
@@ -158,12 +170,14 @@ public class User implements UserDetails, Serializable {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", membership_id=" + membership_id +
+                ", membershipId=" + membershipId +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
+                ", pista=" + pista +
                 ", userProfile='" + userProfile + '\'' +
-                ", role='" + role + '\'' +
+                ", roles=" + roles +
+                ", isAdmin=" + isAdmin +
                 ", isActivate=" + isActivate +
                 '}';
     }

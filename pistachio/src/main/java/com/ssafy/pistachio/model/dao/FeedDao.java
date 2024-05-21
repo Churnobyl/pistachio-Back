@@ -43,8 +43,8 @@ public interface FeedDao {
     public List<FeedComment> getComments(long feedId);
 
     // 피드 수정
-    public int updateFeed(Feed feed);
+    int updateFeedContent(long feedId, String content);
 
     // 피드 삭제
-    public int deleteFeed(int feedId);
+    public int deleteFeed(long feedId);
 }

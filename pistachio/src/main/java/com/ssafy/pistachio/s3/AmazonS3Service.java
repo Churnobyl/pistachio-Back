@@ -101,6 +101,16 @@ public class AmazonS3Service {
     }
 
     /**
+     * S3에 다중 파일 삭제
+     */
+    public void deleteFiles(List<String> fileUrls) {
+        for (String fileUrl : fileUrls) {
+            String keyName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+            deleteFile(keyName);
+        }
+    }
+
+    /**
      * UUID 파일명 반환
      */
     public String getUuidFileName(String fileName) {

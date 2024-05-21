@@ -37,11 +37,15 @@
         fp.id AS feed_picture_id,
         fp.url AS feed_picture_url,
         fc.id AS feed_comment_id,
-        fc.content AS feed_comment_content
+        fc.comment_user_no as feed_comment_user_id,
+        fc.content AS feed_comment_content,
+        u.name as username,
+        u.user_profile as userProfile
         FROM feed f
         LEFT JOIN feed_like fl ON f.id = fl.feed_id
         LEFT JOIN feed_picture fp ON f.id = fp.feed_id
         LEFT JOIN feed_comment fc ON f.id = fc.feed_id
+        LEFT JOIN user u ON f.user_id = u.id
         ORDER BY feed_picture_id
     </select>
 
@@ -69,20 +73,10 @@
         WHERE feed_id = #{feedId}
     </select>
 
-    <!--    피드 수정-->
-    <update id="updateFeed" parameterType="feed">
+    <update id="updateFeedContent">
         UPDATE feed
-        <set>
-            <trim suffixOverrides=",">
-                <if test="projectId != null">
-                    project_id = #{projectId},
-                </if>
-                <if test="content != null">
-                    content = #{content},
-                </if>
-            </trim>
-        </set>
-        WHERE id = #{id}
+        SET content = #{content}
+        WHERE id = #{feedId}
     </update>
 
     <!--    피드 삭제-->

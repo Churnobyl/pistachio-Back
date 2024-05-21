@@ -1,7 +1,10 @@
 package com.ssafy.pistachio.controller;
 
+import com.ssafy.pistachio.model.dto.mail.EmailRequestDto;
 import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
+import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
+import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
 import com.ssafy.pistachio.model.service.UserService;
 import com.ssafy.pistachio.s3.AmazonS3Service;
 import com.ssafy.pistachio.s3.S3FileDto;
@@ -27,8 +30,8 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> signupUser(@RequestBody @Valid User user) {
-        int result = userService.signup(user);
+    public ResponseEntity<?> signupUser(@RequestBody @Valid AddUserRequest addUserRequest) {
+        int result = userService.signup(addUserRequest);
 
         if (result == 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -53,6 +56,12 @@ public class UserController {
         return ResponseEntity.ok(userService.checkNameDuplicate(name));
     }
 
+    @PostMapping("/validate/emails")
+    public ResponseEntity<Boolean> authEmails(@RequestBody @Valid EmailRequestDto emailRequestDto) {
+        userService.authEmail(emailRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
     /* 추후 다시 확인 - 검색 로직 */
     @GetMapping("/search")
     public ResponseEntity<List<User>> searchUser(@RequestParam SearchCondition condition) {
@@ -62,8 +71,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(HttpSession session, @RequestBody User user) {
-        int result = userService.login(session, user);
+    public ResponseEntity<?> loginUser(HttpSession session, @RequestBody UserLoginRequest userLoginRequest) {
+        int result = userService.login(session, userLoginRequest);
 
         if (result == 0) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -1,3 +1,8 @@
+CREATE TABLE role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
 -- 소속 테이블 생성
 CREATE TABLE membership
 (
@@ -26,15 +31,25 @@ CREATE TABLE donate_project
 CREATE TABLE user
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    membership_id BIGINT,
-    email VARCHAR(128) NOT NULL,
+    membership_id BIGINT DEFAULT 1,
+    email VARCHAR(128) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    name VARCHAR(64) NOT NULL,
+    name VARCHAR(64) NOT NULL UNIQUE,
+    pista BIGINT DEFAULT 0,
     user_profile VARCHAR(255),
-    is_admin BOOL NOT NULL DEFAULT false,
-    is_activate BOOL NOT NULL DEFAULT true,
+    is_admin BOOL DEFAULT false,
+    is_activate BOOL DEFAULT true,
     CONSTRAINT FK_user_membership_id FOREIGN KEY (membership_id)
     REFERENCES membership(id)
+);
+
+CREATE TABLE user_role (
+    user_id BIGINT,
+    role_id BIGINT,
+    PRIMARY KEY (user_id, role_id),
+    UNIQUE (user_id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES role(id)
 );
 
 -- 팔로우 테이블 생성
@@ -119,7 +134,7 @@ CREATE TABLE feed_picture
     feed_id BIGINT NOT NULL,
     url VARCHAR(255) NOT NULL,
     CONSTRAINT FK_feed_picture_feed_id FOREIGN KEY(feed_id)
-    REFERENCES feed(id)
+    REFERENCES feed(id) ON DELETE CASCADE
 );
 
 /* Second Sprint
@@ -162,9 +177,9 @@ CREATE TABLE feed_comment
     content TEXT NOT NULL,
     created_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_feed_comment_feed_id FOREIGN KEY(feed_id)
-    REFERENCES feed(id),
+    REFERENCES feed(id) ON DELETE CASCADE,
     CONSTRAINT FK_feed_comment_comment_user_no FOREIGN KEY(comment_user_no)
-    REFERENCES user(id)
+    REFERENCES user(id) ON DELETE CASCADE
 );
 
 -- 피드 좋아요 테이블 생성
