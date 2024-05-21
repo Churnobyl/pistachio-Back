@@ -13,4 +13,16 @@
         DELETE FROM feed_like
         WHERE like_user_no = #{userId} AND feed_id = #{feedId}
     </delete>
+    
+    <update id="addLikeCount" parameterType="long">
+        UPDATE feed
+        SET like_cnt = like_cnt + 1
+        WHERE id = #{feedId}
+    </update>
+
+    <update id="subLikeCount" parameterType="long">
+        UPDATE feed
+        SET like_cnt = like_cnt - 1
+        WHERE id = #{feedId}
+    </update>
 </mapper>

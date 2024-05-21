@@ -215,9 +215,11 @@ public class FeedServiceImpl implements FeedService {
             if (isLiked && !currentlyLiked) {
                 // 좋아요를 추가
                 feedLikeDao.insertLike(feedId, userId);
+                feedLikeDao.addLikeCount(feedId);
             } else if (!isLiked && currentlyLiked) {
                 // 좋아요를 삭제
                 feedLikeDao.deleteLike(feedId, userId);
+                feedLikeDao.subLikeCount(feedId);
             }
         }
     }
