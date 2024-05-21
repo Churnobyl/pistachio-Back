@@ -14,4 +14,7 @@ public interface FeedLikeDao {
 
     @Select("SELECT feed_id FROM feed_like WHERE like_user_no = #{userId}")
     List<Long> getLikedFeedIdsByUserId(@Param("userId") Long userId);
+
+    void addLikeCount(@Param("feedId") Long feedId);
+    void subLikeCount(@Param("feedId") Long feedId);
 }
