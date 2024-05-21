@@ -56,4 +56,7 @@ public interface UserDao {
 
     /* 소속된 프로젝트 */
     public int setAffiliated(User user);
+
+    /* role 추가 */
+    public int setRole(@Param("userId") long userId, @Param("roleId") long roleId);
 }

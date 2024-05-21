@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -106,7 +107,7 @@ public class FeedController {
         if (newMultipartFiles != null && !newMultipartFiles.isEmpty()) {
             newPictures = amazonS3Service.uploadFiles(session, "feed", newMultipartFiles);
             for (S3FileDto newPicture : newPictures) {
-                newPictureUrls.add(newPicture.getUploadFileUrl());
+                newPictureUrls.add(newPicture.getUploadFilepath() + "/" + newPicture.getUploadFileName());
             }
         }
 
@@ -114,10 +115,31 @@ public class FeedController {
         amazonS3Service.deleteFiles(deletePictureUrls);
 
         // FeedRequest에 새로운 이미지 URL 추가
-//        feedRequest.setPictureUrls(newPictureUrls);
+        feedRequest.setPictureUrls(newPictureUrls);
 
         // 피드 수정
-//        feedService.modifyFeed(feedId, feedRequest);
+        feedService.modifyFeed(feedId, feedRequest);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    @DeleteMapping("/{feedId}")
+    public ResponseEntity<?> deleteFeed(HttpSession session, @PathVariable("feedId") Long feedId) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        FeedResponse dbFeed = feedService.getOne(feedId);
+
+        if (dbFeed == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (dbFeed.getFeed().getUserId() != dbUser.getId()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        amazonS3Service.deleteFiles(dbFeed.getPictureUrls());
+        feedService.deleteFeed(feedId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

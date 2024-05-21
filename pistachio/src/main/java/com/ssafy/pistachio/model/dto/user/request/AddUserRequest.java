@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class AddUserRequest {
+    private long id;
+
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     @Email
     private String email;
@@ -20,6 +22,9 @@ public class AddUserRequest {
 
     private String role;
 
+    public AddUserRequest() {
+    }
+
     public AddUserRequest(
                 String email,
                 String password,
@@ -27,6 +32,14 @@ public class AddUserRequest {
         this.email = email;
         this.password = password;
         this.name = name;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getPassword() {

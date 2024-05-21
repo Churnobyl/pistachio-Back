@@ -22,10 +22,10 @@ public interface FeedService {
     public FeedResponse getOne(long feedId);
 
     // 피드 수정
-    public int modifyFeed(Feed feed);
+    public int modifyFeed(long feedId, FeedRequest feedRequest);
 
     // 피드 삭제
-    public int deleteFeed(int feedId);
+    public int deleteFeed(long feedId);
 
     // 댓글 작성
     public int writeComment(AddCommentRequest addCommentRequest);

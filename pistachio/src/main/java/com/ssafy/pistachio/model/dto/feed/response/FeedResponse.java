@@ -4,7 +4,7 @@ import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
-import com.ssafy.pistachio.model.dto.user.User;
+import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,17 +14,17 @@ public class FeedResponse {
     private final Feed feed;
     private List<FeedPicture> feedPictures;
     private List<CommentResponse> commentResponses;
-    private User user;
+    private UserResponse userResponse;
     private List<String> pictureUrls;
 
     public FeedResponse(Feed feed,
                         List<FeedPicture> feedPictures,
                         List<CommentResponse> commentResponses,
-                        User user) {
+                        UserResponse userResponse) {
         this.feed = feed;
         this.feedPictures = feedPictures;
         this.commentResponses = commentResponses;
-        this.user = user;
+        this.userResponse = userResponse;
         this.pictureUrls = feedPictures.stream()
                 .map(FeedPicture::getUrl)
                 .collect(Collectors.toList());
@@ -34,7 +34,7 @@ public class FeedResponse {
         private Feed feed;
         private List<FeedPicture> feedPictures;
         private List<CommentResponse> commentResponses;
-        private User user;
+        private UserResponse userResponse;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -51,8 +51,8 @@ public class FeedResponse {
             return this;
         }
 
-        public Builder user(final User user) {
-            this.user = user;
+        public Builder userResponse(final UserResponse userResponse) {
+            this.userResponse = userResponse;
             return this;
         }
 
@@ -61,7 +61,7 @@ public class FeedResponse {
                     this.feed,
                     this.feedPictures,
                     this.commentResponses,
-                    this.user);
+                    this.userResponse);
         }
     }
 
@@ -85,8 +85,8 @@ public class FeedResponse {
         return pictureUrls;
     }
 
-    public User getUser() {
-        return user;
+    public UserResponse getUserResponse() {
+        return userResponse;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class FeedResponse {
                 ", feedPictures=" + feedPictures +
                 ", commentResponses=" + commentResponses +
                 ", pictureUrls=" + pictureUrls +
-                ", user=" + user +
+                ", userResponse=" + userResponse +
                 '}';
     }
 }

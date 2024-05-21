@@ -33,6 +33,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
 
+    private final long USER_ROLE = 1; // 1 : 일반 유저로 회원가입
+
     public UserServiceImpl(UserDao userDao,
                            RedisUtil redisUtil,
                            PasswordEncoder passwordEncoder,
@@ -43,11 +45,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.javaMailSender = javaMailSender;
     }
 
+    @Transactional
     @Override
     public int signup(AddUserRequest addUserRequest) {
         String encodePassword = passwordEncoder.encode(addUserRequest.getPassword());
         addUserRequest.setPassword(encodePassword);
-        return userDao.createUser(addUserRequest);
+
+        if (userDao.getUserByEmail(addUserRequest.getEmail()) != null) {
+            return 0;
+        }
+
+        userDao.createUser(addUserRequest);
+        userDao.setRole(addUserRequest.getId(), USER_ROLE);
+
+        return 1;
     }
 
     @Override

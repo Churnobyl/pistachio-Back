@@ -9,13 +9,19 @@ public class FeedRequest {
     private Long userId;
     private Long projectId;
     private String content;
+    private List<String> pictureUrls;
+
+    public FeedRequest() {
+    }
 
     public FeedRequest(Long userId,
                        Long projectId,
-                       String content) {
+                       String content,
+                       List<String> pictureUrls) {
         this.userId = userId;
         this.projectId = projectId;
         this.content = content;
+        this.pictureUrls = pictureUrls;
     }
 
     public Long getId() {
@@ -48,6 +54,14 @@ public class FeedRequest {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public List<String> getPictureUrls() {
+        return pictureUrls;
+    }
+
+    public void setPictureUrls(List<String> pictureUrls) {
+        this.pictureUrls = pictureUrls;
     }
 
     @Override

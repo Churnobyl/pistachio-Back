@@ -6,3 +6,6 @@ INSERT INTO donate_project(agency_id, name, description, current_donation_amount
 
 -- role 테이블
 INSERT INTO role(name) VALUES ('USER');
+INSERT INTO role(name) VALUES ('PISTACHIO');
+INSERT INTO role(name) VALUES ('AGENCY');
+INSERT INTO role(name) VALUES ('ADMIN');

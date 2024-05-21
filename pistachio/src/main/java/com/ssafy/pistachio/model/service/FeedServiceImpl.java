@@ -2,6 +2,7 @@ package com.ssafy.pistachio.model.service;
 
 import com.ssafy.pistachio.model.dao.CommentDao;
 import com.ssafy.pistachio.model.dao.FeedDao;
+import com.ssafy.pistachio.model.dao.FeedPictureDao;
 import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.comment.request.AddCommentRequest;
@@ -12,6 +13,7 @@ import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponse;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
 import com.ssafy.pistachio.model.dto.feed.request.PictureRequest;
+import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 import com.ssafy.pistachio.s3.S3FileDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +29,15 @@ public class FeedServiceImpl implements FeedService {
     private final FeedDao feedDao;
     private final UserDao userDao;
     private final CommentDao commentDao;
+    private final FeedPictureDao feedPictureDao;
 
     public FeedServiceImpl(FeedDao feedDao,
                            UserDao userDao,
-                           CommentDao commentDao) {
+                           CommentDao commentDao, FeedPictureDao feedPictureDao) {
         this.feedDao = feedDao;
         this.userDao = userDao;
         this.commentDao = commentDao;
+        this.feedPictureDao = feedPictureDao;
     }
 
     @Transactional
@@ -63,6 +67,11 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public List<FeedResponseAll> getAll() {
         List<Map<String, Object>> results = feedDao.selectAll();
+
+        if (results == null) {
+            return null;
+        }
+
         Map<Long, FeedResponseAll.Builder> feedResponseMap = new ConcurrentHashMap<>();
 
         for (Map<String, Object> row : results) {
@@ -131,21 +140,40 @@ public class FeedServiceImpl implements FeedService {
                 .feed(feed)
                 .feedPictures(feedPictures)
                 .feedComment(feedComments)
+                .userResponse(userDao.getUserByIdForResponse(feed.getUserId()))
                 .build();
     }
 
     @Override
-    public int modifyFeed(Feed feed) {
-        return feedDao.updateFeed(feed);
+    @Transactional
+    public int modifyFeed(long feedId, FeedRequest feedRequest) {
+        // 피드 내용 업데이트
+        int result = feedDao.updateFeedContent(feedId, feedRequest.getContent());
+
+        // 기존 이미지 URL을 모두 삭제
+        feedPictureDao.deleteByFeedId(feedId);
+
+        // 새로운 이미지 URL을 추가
+        for (String url : feedRequest.getPictureUrls()) {
+            feedPictureDao.insert(new FeedPicture(feedId, url));
+        }
+
+        return result;
     }
 
     @Override
-    public int deleteFeed(int feedId) {
+    public int deleteFeed(long feedId) {
         return feedDao.deleteFeed(feedId);
     }
 
     @Override
     public int writeComment(AddCommentRequest addCommentRequest) {
+        Feed feed = feedDao.getFeed(addCommentRequest.getFeedId());
+
+        if (feed == null) {
+            return 0;
+        }
+
         return commentDao.createComment(addCommentRequest);
     }
 

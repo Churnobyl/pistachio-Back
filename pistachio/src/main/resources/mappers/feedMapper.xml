@@ -73,20 +73,10 @@
         WHERE feed_id = #{feedId}
     </select>
 
-    <!--    피드 수정-->
-    <update id="updateFeed" parameterType="feed">
+    <update id="updateFeedContent">
         UPDATE feed
-        <set>
-            <trim suffixOverrides=",">
-                <if test="projectId != null">
-                    project_id = #{projectId},
-                </if>
-                <if test="content != null">
-                    content = #{content},
-                </if>
-            </trim>
-        </set>
-        WHERE id = #{id}
+        SET content = #{content}
+        WHERE id = #{feedId}
     </update>
 
     <!--    피드 삭제-->

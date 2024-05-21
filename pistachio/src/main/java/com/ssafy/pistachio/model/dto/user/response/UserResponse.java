@@ -1,36 +1,45 @@
 package com.ssafy.pistachio.model.dto.user.response;
 
 public class UserResponse {
-    private long id;
+    private long userId;
     private long membershipId;
+    private String membershipName;
+    private String membershipProfileUrl;
     private String email;
     private String name;
     private String userProfile;
     private boolean isAdmin;
+    private long userType;
 
     public UserResponse() {
     }
 
-    public UserResponse(long id,
+    public UserResponse(long userId,
                         long membershipId,
+                        String membershipName,
+                        String membershipProfileUrl,
                         String email,
                         String name,
                         String userProfile,
-                        boolean isAdmin) {
-        this.id = id;
+                        boolean isAdmin,
+                        long userType) {
+        this.userId = userId;
         this.membershipId = membershipId;
+        this.membershipName = membershipName;
+        this.membershipProfileUrl = membershipProfileUrl;
         this.email = email;
         this.name = name;
         this.userProfile = userProfile;
         this.isAdmin = isAdmin;
+        this.userType = userType;
     }
 
-    public long getId() {
-        return id;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public long getMembershipId() {
@@ -39,6 +48,22 @@ public class UserResponse {
 
     public void setMembershipId(long membershipId) {
         this.membershipId = membershipId;
+    }
+
+    public String getMembershipName() {
+        return membershipName;
+    }
+
+    public void setMembershipName(String membershipName) {
+        this.membershipName = membershipName;
+    }
+
+    public String getMembershipProfileUrl() {
+        return membershipProfileUrl;
+    }
+
+    public void setMembershipProfileUrl(String membershipProfileUrl) {
+        this.membershipProfileUrl = membershipProfileUrl;
     }
 
     public String getEmail() {
@@ -73,15 +98,26 @@ public class UserResponse {
         isAdmin = admin;
     }
 
+    public long getUserType() {
+        return userType;
+    }
+
+    public void setUserType(long userType) {
+        this.userType = userType;
+    }
+
     @Override
     public String toString() {
         return "UserResponse{" +
-                "id=" + id +
+                "userId=" + userId +
                 ", membershipId=" + membershipId +
+                ", membershipName='" + membershipName + '\'' +
+                ", membershipProfileUrl='" + membershipProfileUrl + '\'' +
                 ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", userProfile='" + userProfile + '\'' +
                 ", isAdmin=" + isAdmin +
+                ", userType=" + userType +
                 '}';
     }
 }
