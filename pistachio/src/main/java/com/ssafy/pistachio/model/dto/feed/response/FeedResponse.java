@@ -1,6 +1,5 @@
 package com.ssafy.pistachio.model.dto.feed.response;
 
-import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
@@ -16,11 +15,13 @@ public class FeedResponse {
     private List<CommentResponse> commentResponses;
     private UserResponse userResponse;
     private List<String> pictureUrls;
+    private boolean isUserLike;
 
     public FeedResponse(Feed feed,
                         List<FeedPicture> feedPictures,
                         List<CommentResponse> commentResponses,
-                        UserResponse userResponse) {
+                        UserResponse userResponse,
+                        boolean isUserLike) {
         this.feed = feed;
         this.feedPictures = feedPictures;
         this.commentResponses = commentResponses;
@@ -28,6 +29,7 @@ public class FeedResponse {
         this.pictureUrls = feedPictures.stream()
                 .map(FeedPicture::getUrl)
                 .collect(Collectors.toList());
+        this.isUserLike = isUserLike;
     }
 
     public static class Builder {
@@ -35,6 +37,7 @@ public class FeedResponse {
         private List<FeedPicture> feedPictures;
         private List<CommentResponse> commentResponses;
         private UserResponse userResponse;
+        private boolean isUserLike;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -56,12 +59,18 @@ public class FeedResponse {
             return this;
         }
 
+        public Builder isUserLike(final boolean isUserLike) {
+            this.isUserLike = isUserLike;
+            return this;
+        }
+
         public FeedResponse build() {
             return new FeedResponse(
                     this.feed,
                     this.feedPictures,
                     this.commentResponses,
-                    this.userResponse);
+                    this.userResponse,
+                    this.isUserLike);
         }
     }
 
@@ -89,6 +98,10 @@ public class FeedResponse {
         return userResponse;
     }
 
+    public boolean isUserLike() {
+        return isUserLike;
+    }
+
     @Override
     public String toString() {
         return "FeedResponse{" +
@@ -97,6 +110,7 @@ public class FeedResponse {
                 ", commentResponses=" + commentResponses +
                 ", pictureUrls=" + pictureUrls +
                 ", userResponse=" + userResponse +
+                ", isUserLike=" + isUserLike +
                 '}';
     }
 }

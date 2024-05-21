@@ -49,6 +49,34 @@
         ORDER BY feed_picture_id
     </select>
 
+    <select id="selectAllByUser" parameterType="long" resultType="hashmap">
+        SELECT
+        f.id AS feed_id,
+        f.user_id,
+        f.project_id,
+        f.content,
+        f.like_cnt,
+        f.created_time,
+        f.updated_time,
+        f.is_boast,
+        fl.id AS feed_like_id,
+        fl.like_user_no AS like_user_id,
+        fp.id AS feed_picture_id,
+        fp.url AS feed_picture_url,
+        fc.id AS feed_comment_id,
+        fc.comment_user_no as feed_comment_user_id,
+        fc.content AS feed_comment_content,
+        u.name as username,
+        u.user_profile as userProfile
+        FROM feed f
+        LEFT JOIN feed_like fl ON f.id = fl.feed_id
+        LEFT JOIN feed_picture fp ON f.id = fp.feed_id
+        LEFT JOIN feed_comment fc ON f.id = fc.feed_id
+        LEFT JOIN user u ON f.user_id = u.id
+        WHERE f.user_id = #{userId}
+        ORDER BY feed_picture_id
+    </select>
+
     <!--    피드 상세 조회-->
     <select id="getFeed" parameterType="long">
         SELECT * FROM feed

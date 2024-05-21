@@ -6,7 +6,7 @@ import com.ssafy.pistachio.model.dto.donate.Membership;
 
 import java.util.List;
 
-public interface DonateDao {
+public interface DonationDao {
     /* 기부 */
 
     // 해당 유저의 기부 전체 조회
@@ -20,16 +20,11 @@ public interface DonateDao {
 
 
     /* 단체 */
-
     // 단체 생성
     public int createMembership(Membership membership);
 
     // 단체 조회
     public List<Membership> selectAllMemberShip();
-
-    // 단체 수정
-    public int updateMembership(Membership membership);
-
 
     /* 프로젝트 */
 

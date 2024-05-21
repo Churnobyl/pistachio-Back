@@ -9,6 +9,7 @@ import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
 import com.ssafy.pistachio.s3.S3FileDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FeedService {
 
@@ -16,10 +17,13 @@ public interface FeedService {
     public int writeFeed(FeedRequest feedRequest, List<S3FileDto> pictures);
 
     // 피드 전체 조회
-    public List<FeedResponseAll>  getAll();
+    public List<FeedResponseAll>  getAll(Long userId);
+
+    // 특정 유저 피드 전체 조회
+    List<FeedResponseAll> getAllByUser(Long userId);
 
     // 피드 상세 조회
-    public FeedResponse getOne(long feedId);
+    public FeedResponse getOne(long feedId, Long userId);
 
     // 피드 수정
     public int modifyFeed(long feedId, FeedRequest feedRequest);
@@ -35,4 +39,7 @@ public interface FeedService {
 
     // 댓글 삭제
     public int deleteComment(long commentId);
+
+    // 좋아요 업데이트
+    void batchUpdateLikes(Long userId, Map<Long, Boolean> likeStatusMap);
 }
