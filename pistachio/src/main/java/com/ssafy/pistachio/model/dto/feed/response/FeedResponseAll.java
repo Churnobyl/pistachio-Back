@@ -15,18 +15,21 @@ public class FeedResponseAll {
     private List<CommentResponse> commentResponses;
     private UserResponse userResponse;
     private boolean isUserLike;
+    private boolean isUserFollow;
 
     public FeedResponseAll(Feed feed,
                            List<FeedPicture> feedPictures,
                            List<CommentResponse> commentResponses,
                            UserResponse userResponse,
-                           boolean isUserLike
+                           boolean isUserLike,
+                           boolean isUserFollow
     ) {
         this.feed = feed;
         this.feedPictures = feedPictures;
         this.commentResponses = commentResponses;
         this.userResponse = userResponse;
         this.isUserLike = isUserLike;
+        this.isUserFollow = isUserFollow;
     }
 
     public static class Builder {
@@ -35,6 +38,7 @@ public class FeedResponseAll {
         private List<CommentResponse> commentResponses = new ArrayList<>();
         private UserResponse userResponse;
         private boolean isUserLike;
+        private boolean isUserFollow;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -61,13 +65,19 @@ public class FeedResponseAll {
             return this;
         }
 
+        public Builder isUserFollow(final boolean isUserFollow) {
+            this.isUserFollow = isUserFollow;
+            return this;
+        }
+
         public FeedResponseAll build() {
             return new FeedResponseAll(
                     this.feed,
                     this.feedPictures,
                     this.commentResponses,
                     this.userResponse,
-                    this.isUserLike);
+                    this.isUserLike,
+                    this.isUserFollow);
         }
     }
 
@@ -95,6 +105,10 @@ public class FeedResponseAll {
         return isUserLike;
     }
 
+    public boolean isUserFollow() {
+        return isUserFollow;
+    }
+
     @Override
     public String toString() {
         return "FeedResponse{" +
@@ -103,6 +117,7 @@ public class FeedResponseAll {
                 ", commentResponses=" + commentResponses +
                 ", userResponse=" + userResponse +
                 ", isUserLike=" + isUserLike +
+                ", isUserFollow=" + isUserFollow +
                 '}';
     }
 }

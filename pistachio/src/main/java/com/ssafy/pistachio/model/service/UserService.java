@@ -8,6 +8,7 @@ import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -39,4 +40,7 @@ public interface UserService {
 
     // 유저 탈퇴
     public int inactivate(User user);
+
+    // 팔로우 업데이트
+    void batchUpdateFollow(Long userId, Map<Long, Boolean> followStatusMap);
 }

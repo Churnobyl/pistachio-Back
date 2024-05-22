@@ -69,16 +69,27 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public List<FeedResponseAll> getAll(Long userId) {
         List<Long> likedFeedIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
-        return processFeeds(feedDao.selectAll(), likedFeedIds);
+        List<Long> followingUserIds = userDao.getFollowerIdByUserId(userId);
+        return processFeeds(userId,
+                feedDao.selectAll(),
+                likedFeedIds,
+                followingUserIds);
     }
 
     @Transactional
     public List<FeedResponseAll> getAllByUser(Long userId) {
         List<Long> likedFeedIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
-        return processFeeds(feedDao.selectAllByUser(userId), likedFeedIds);
+        List<Long> followingUserIds = userDao.getFollowerIdByUserId(userId);
+        return processFeeds(userId,
+                feedDao.selectAllByUser(userId),
+                likedFeedIds,
+                followingUserIds);
     }
 
-    private List<FeedResponseAll> processFeeds(List<Map<String, Object>> results, List<Long> likedFeedIds) {
+    private List<FeedResponseAll> processFeeds(Long userId,
+                                               List<Map<String, Object>> results,
+                                               List<Long> likedFeedIds,
+                                               List<Long> followingUserIds) {
         if (results == null) {
             return null;
         }
@@ -99,6 +110,7 @@ public class FeedServiceImpl implements FeedService {
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("created_time")),
                                     java.sql.Timestamp.valueOf((LocalDateTime) row.get("updated_time"))))
                             .isUserLike(likedFeedIds.contains(feedId))
+                            .isUserFollow(followingUserIds.contains((Long) row.get("user_id")))
             );
 
             builder.userResponse(userDao.getUserByIdForResponse((Long) row.get("user_id")));

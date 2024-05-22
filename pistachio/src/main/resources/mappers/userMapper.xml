@@ -126,6 +126,42 @@
         WHERE ur.user_id = #{userId}
     </select>
 
+    <insert id="addFollow" parameterType="map">
+        INSERT INTO follow
+        (following_id, follower_id)
+        VALUES
+        (#{followingUserId}, #{followerUserId})
+    </insert>
+
+    <insert id="deleteFollow" parameterType="map">
+        DELETE FROM follow
+        WHERE following_id = #{followingUserId} AND follower_id = #{followerUserId}
+    </insert>
+
+    <update id="addFollowingCount" parameterType="long">
+        UPDATE user
+        SET following_count = following_count + 1
+        WHERE id = #{userId}
+    </update>
+
+    <update id="subFollowingCount" parameterType="long">
+        UPDATE user
+        SET following_count = following_count - 1
+        WHERE id = #{userId}
+    </update>
+
+    <update id="addFollowerCount" parameterType="long">
+        UPDATE user
+        SET follower_count = follower_count + 1
+        WHERE id = #{userId}
+    </update>
+
+    <update id="subFollowerCount" parameterType="long">
+        UPDATE user
+        SET follower_count = follower_count - 1
+        WHERE id = #{userId}
+    </update>
+
     <insert id="setRole" parameterType="map">
         INSERT INTO user_role (user_id, role_id)
         VALUES (#{userId}, #{roleId})

@@ -10,6 +10,8 @@ public class UserResponse {
     private String userProfile;
     private boolean isAdmin;
     private long userType;
+    private long followingCnt;
+    private long followerCnt;
 
     public UserResponse() {
     }
@@ -22,7 +24,9 @@ public class UserResponse {
                         String name,
                         String userProfile,
                         boolean isAdmin,
-                        long userType) {
+                        long userType,
+                        long followingCnt,
+                        long followerCnt) {
         this.userId = userId;
         this.membershipId = membershipId;
         this.membershipName = membershipName;
@@ -32,6 +36,8 @@ public class UserResponse {
         this.userProfile = userProfile;
         this.isAdmin = isAdmin;
         this.userType = userType;
+        this.followingCnt = followingCnt;
+        this.followerCnt = followerCnt;
     }
 
     public long getUserId() {
@@ -106,6 +112,22 @@ public class UserResponse {
         this.userType = userType;
     }
 
+    public long getFollowingCnt() {
+        return followingCnt;
+    }
+
+    public void setFollowingCnt(long followingCnt) {
+        this.followingCnt = followingCnt;
+    }
+
+    public long getFollowerCnt() {
+        return followerCnt;
+    }
+
+    public void setFollowerCnt(long followerCnt) {
+        this.followerCnt = followerCnt;
+    }
+
     @Override
     public String toString() {
         return "UserResponse{" +
@@ -118,6 +140,8 @@ public class UserResponse {
                 ", userProfile='" + userProfile + '\'' +
                 ", isAdmin=" + isAdmin +
                 ", userType=" + userType +
+                ", followingCnt=" + followingCnt +
+                ", followerCnt=" + followerCnt +
                 '}';
     }
 }

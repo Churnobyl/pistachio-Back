@@ -16,12 +16,14 @@ public class FeedResponse {
     private UserResponse userResponse;
     private List<String> pictureUrls;
     private boolean isUserLike;
+    private boolean isUserFollow;
 
     public FeedResponse(Feed feed,
                         List<FeedPicture> feedPictures,
                         List<CommentResponse> commentResponses,
                         UserResponse userResponse,
-                        boolean isUserLike) {
+                        boolean isUserLike,
+                        boolean isUserFollow) {
         this.feed = feed;
         this.feedPictures = feedPictures;
         this.commentResponses = commentResponses;
@@ -30,6 +32,7 @@ public class FeedResponse {
                 .map(FeedPicture::getUrl)
                 .collect(Collectors.toList());
         this.isUserLike = isUserLike;
+        this.isUserFollow = isUserFollow;
     }
 
     public static class Builder {
@@ -38,6 +41,7 @@ public class FeedResponse {
         private List<CommentResponse> commentResponses;
         private UserResponse userResponse;
         private boolean isUserLike;
+        private boolean isUserFollow;
 
         public Builder feed(final Feed feed) {
             this.feed = feed;
@@ -64,13 +68,19 @@ public class FeedResponse {
             return this;
         }
 
+        public Builder isUserFollow(final boolean isUserFollow) {
+            this.isUserFollow = isUserFollow;
+            return this;
+        }
+
         public FeedResponse build() {
             return new FeedResponse(
                     this.feed,
                     this.feedPictures,
                     this.commentResponses,
                     this.userResponse,
-                    this.isUserLike);
+                    this.isUserLike,
+                    this.isUserFollow);
         }
     }
 
@@ -102,6 +112,10 @@ public class FeedResponse {
         return isUserLike;
     }
 
+    public boolean isUserFollow() {
+        return isUserFollow;
+    }
+
     @Override
     public String toString() {
         return "FeedResponse{" +
@@ -111,6 +125,7 @@ public class FeedResponse {
                 ", pictureUrls=" + pictureUrls +
                 ", userResponse=" + userResponse +
                 ", isUserLike=" + isUserLike +
+                ", isUserFollow=" + isUserFollow +
                 '}';
     }
 }

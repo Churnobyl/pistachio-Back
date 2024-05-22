@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -148,5 +149,11 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
+    @PostMapping("/follow")
+    public ResponseEntity<?> batchUpdateFollow(HttpSession session, @RequestBody Map<Long, Boolean> followStatusMap) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        userService.batchUpdateFollow(dbUser.getId(), followStatusMap);
+        return ResponseEntity.ok().build();
+    }
 }
