@@ -4,10 +4,24 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.pistachio.model.dao.DonationDao">
 
+    <!-- 기부 -->
+<!--    피스타 추가하기-->
+    <update id="updatePista" parameterType="addPistaRequest">
+        UPDATE user
+        SET pista = pista + ${pistaAmount}
+        WHERE id = #{userId}
+    </update>
+
     <!--  단체  -->
+    <insert id="createDonation" parameterType="donationRequest">
+        INSERT INTO donation
+        (project_id, user_id, amount)
+        VALUES
+        (#{projectId}, #{userId}, #{amount})
+    </insert>
 
 <!--    단체 생성-->
-    <insert id="createMembership" parameterType="addMembershipRequest">
+    <insert id="createMembership" parameterType="addMembershipRequest" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO membership
         (name, agency_profile_url)
         VALUES
@@ -24,5 +38,17 @@
         (#{agencyId}, #{name}, #{description}, #{targetDonationAmount}, #{startTime}, #{endTime})
     </insert>
 
+<!--    특정 단체의 프로젝트 전체 조회-->
+    <select id="selectAllDonateProjectByAgencyId" parameterType="long">
+        SELECT *
+        FROM donate_project
+        WHERE agency_id = #{agencyId}
+    </select>
 
+<!--    특정 단체의 프로젝트 상세 조회-->
+    <select id="selectOneDonateProjectById" parameterType="long">
+        SELECT *
+        FROM donate_project
+        WHERE id = #{id}
+    </select>
 </mapper>

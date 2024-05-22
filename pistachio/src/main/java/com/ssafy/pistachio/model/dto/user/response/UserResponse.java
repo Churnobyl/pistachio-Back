@@ -8,6 +8,7 @@ public class UserResponse {
     private String email;
     private String name;
     private String userProfile;
+    private long pista;
     private boolean isAdmin;
     private long userType;
     private long followingCnt;
@@ -23,6 +24,7 @@ public class UserResponse {
                         String email,
                         String name,
                         String userProfile,
+                        long pista,
                         boolean isAdmin,
                         long userType,
                         long followingCnt,
@@ -34,6 +36,7 @@ public class UserResponse {
         this.email = email;
         this.name = name;
         this.userProfile = userProfile;
+        this.pista = pista;
         this.isAdmin = isAdmin;
         this.userType = userType;
         this.followingCnt = followingCnt;
@@ -96,6 +99,14 @@ public class UserResponse {
         this.userProfile = userProfile;
     }
 
+    public long getPista() {
+        return pista;
+    }
+
+    public void setPista(long pista) {
+        this.pista = pista;
+    }
+
     public boolean isAdmin() {
         return isAdmin;
     }
@@ -138,6 +149,7 @@ public class UserResponse {
                 ", email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", userProfile='" + userProfile + '\'' +
+                ", pista=" + pista +
                 ", isAdmin=" + isAdmin +
                 ", userType=" + userType +
                 ", followingCnt=" + followingCnt +

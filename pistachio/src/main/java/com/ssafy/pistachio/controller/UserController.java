@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/user")
@@ -131,7 +132,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(uploadFiles);
+        return ResponseEntity.ok(dbUser.getUserProfile());
     }
 
     @DeleteMapping("/profile")

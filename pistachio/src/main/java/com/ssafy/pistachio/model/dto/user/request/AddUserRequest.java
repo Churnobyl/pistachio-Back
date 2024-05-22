@@ -20,7 +20,7 @@ public class AddUserRequest {
     @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,8}$", message = "닉네임은 특수문자를 제외한 2~8자리여야 합니다.")
     private String name;
 
-    private String role;
+    private Long role;
 
     public AddUserRequest() {
     }
@@ -66,11 +66,11 @@ public class AddUserRequest {
         this.name = name;
     }
 
-    public String getRole() {
+    public Long getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Long role) {
         this.role = role;
     }
 

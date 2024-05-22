@@ -66,6 +66,7 @@
         u.email,
         u.name,
         u.user_profile as userProfile,
+        u.pista as pista,
         u.is_admin as isAdmin,
         ur.role_id as userType
         FROM user u
@@ -109,6 +110,13 @@
             </trim>
         </set>
         WHERE id = #{id}
+    </update>
+
+    <!-- 유저 소속 단체 수정 -->
+    <update id="updateUserMembership" parameterType="map">
+        UPDATE user
+        SET membership_id = #{membershipId}
+        WHERE id = #{userId}
     </update>
 
     <!--  유저 탈퇴  -->
@@ -168,4 +176,10 @@
         ON DUPLICATE KEY UPDATE
         role_id = VALUES(role_id)
     </insert>
+
+    <select id="getRole" parameterType="long">
+        SELECT role_id
+        FROM user_role
+        WHERE user_id = #{userId}
+    </select>
 </mapper>
