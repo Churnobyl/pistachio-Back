@@ -19,14 +19,21 @@ CREATE TABLE donate_project
     agency_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    current_donation_amount BIGINT NOT NULL,
+    current_donation_amount BIGINT DEFAULT 0,
     target_donation_amount BIGINT NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME NOT NULL,
-    is_end BOOL NOT NULL DEFAULT FALSE,
+    is_end BOOL DEFAULT FALSE,
     CONSTRAINT FK_agency_id FOREIGN KEY (agency_id)
     REFERENCES membership(id)
 );
+
+CREATE EVENT update_is_end
+ON SCHEDULE EVERY 1 MINUTE
+DO
+  UPDATE donate_project
+  SET is_end = TRUE
+  WHERE end_time < NOW() AND is_end = FALSE;
 
 -- 유저 테이블 생성
 CREATE TABLE user

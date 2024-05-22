@@ -68,12 +68,18 @@
         u.user_profile as userProfile,
         u.pista as pista,
         u.is_admin as isAdmin,
-        ur.role_id as userType
+        ur.role_id as userType,
+        af.project_id as affiliatedProjectId,
+        dp.name as affiliatedProjectName
         FROM user u
         LEFT JOIN user_role ur
         ON u.id = ur.user_id
         LEFT JOIN membership ms
         ON u.membership_id = ms.id
+        LEFT JOIN affiliated af
+        ON u.id = af.donated_user_id
+        LEFT JOIN donate_project dp
+        ON af.project_id = dp.id
         WHERE u.id = #{id}
     </select>
 

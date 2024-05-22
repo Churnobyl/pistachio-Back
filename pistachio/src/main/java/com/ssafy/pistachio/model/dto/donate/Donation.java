@@ -8,13 +8,13 @@ public class Donation {
     private Long projectId;
     private Long userId;
     private Long amount;
-    private Long isBoast;
+    private boolean isBoast;
 
     public Donation(Long id,
                     Long projectId,
                     Long userId,
                     Long amount,
-                    Long isBoast) {
+                    boolean isBoast) {
         this.id = id;
         this.projectId = projectId;
         this.userId = userId;
@@ -54,11 +54,11 @@ public class Donation {
         this.amount = amount;
     }
 
-    public Long getIsBoast() {
+    public boolean getIsBoast() {
         return isBoast;
     }
 
-    public void setIsBoast(Long isBoast) {
+    public void setIsBoast(boolean isBoast) {
         this.isBoast = isBoast;
     }
 

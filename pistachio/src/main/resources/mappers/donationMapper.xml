@@ -12,6 +12,32 @@
         WHERE id = #{userId}
     </update>
 
+    <update id="subPista" parameterType="donationRequest">
+        UPDATE user
+        SET pista = pista - ${amount}
+        WHERE id = #{userId}
+    </update>
+
+<!--    해당 유저의 기부 전체 조회-->
+    <select id="selectAllByUserId" parameterType="long">
+        SELECT
+        d.id as id,
+        m.name as agencyName,
+        m.agency_profile_url as agencyProfile,
+        d.project_id as projectId,
+        dp.name as projectName,
+        dp.description as projectDescription,
+        d.user_id as userId,
+        d.amount as amount,
+        d.is_boast as isBoast
+        FROM donation d
+        LEFT JOIN donate_project dp
+        ON d.project_id = dp.id
+        LEFT JOIN membership m
+        ON dp.agency_id = m.id
+        WHERE user_id = #{userId}
+    </select>
+
     <!--  단체  -->
     <insert id="createDonation" parameterType="donationRequest">
         INSERT INTO donation
@@ -49,6 +75,35 @@
     <select id="selectOneDonateProjectById" parameterType="long">
         SELECT *
         FROM donate_project
-        WHERE id = #{id}
+        WHERE id = #{projectId}
     </select>
+
+    <update id="updateAmountForDonateProject" parameterType="donationRequest">
+        UPDATE donate_project
+        SET current_donation_amount = current_donation_amount + ${amount}
+        WHERE id = #{projectId}
+    </update>
+
+<!--    피스타치오와 단체-->
+
+<!--    가입-->
+    <insert id="insertAffiliation" parameterType="affiliationRequest">
+        INSERT INTO affiliated
+        (donated_user_id, project_id)
+        VALUES
+        (#{userId}, #{projectId})
+    </insert>
+
+<!--    해당 유저 가입 정보 확인-->
+    <select id="selectAffiliationByUserId" parameterType="long">
+        SELECT count(id) FROM affiliated
+        WHERE donated_user_id = #{userId}
+    </select>
+
+<!--  탈퇴  -->
+    <delete id="deleteAffiliation" parameterType="long">
+        DELETE FROM affiliated
+        WHERE donated_user_id = #{userId}
+    </delete>
+
 </mapper>
