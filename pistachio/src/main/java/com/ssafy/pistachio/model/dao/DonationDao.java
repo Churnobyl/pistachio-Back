@@ -3,10 +3,8 @@ package com.ssafy.pistachio.model.dao;
 import com.ssafy.pistachio.model.dto.donate.DonateProject;
 import com.ssafy.pistachio.model.dto.donate.Donation;
 import com.ssafy.pistachio.model.dto.donate.Membership;
-import com.ssafy.pistachio.model.dto.donate.request.AddDonateProjectRequest;
-import com.ssafy.pistachio.model.dto.donate.request.AddMembershipRequest;
-import com.ssafy.pistachio.model.dto.donate.request.AddPistaRequest;
-import com.ssafy.pistachio.model.dto.donate.request.DonationRequest;
+import com.ssafy.pistachio.model.dto.donate.request.*;
+import com.ssafy.pistachio.model.dto.donate.response.DonationResponse;
 
 import java.util.List;
 
@@ -15,11 +13,11 @@ public interface DonationDao {
     // 피스타 추가하기
     public int updatePista(AddPistaRequest addPistaRequest);
 
-    // 해당 유저의 기부 전체 조회
-    public List<Donation> selectAllByUserId(Long userId);
+    // 피스타 차감하기
+    public int subPista(DonationRequest donationRequest);
 
-    // 기부 상세 조회
-    public Donation selectByDonationId(Long donationId);
+    // 해당 유저의 기부 전체 조회
+    public List<DonationResponse> selectAllByUserId(Long userId);
 
     // 기부하기
     public int createDonation(DonationRequest donationRequest);
@@ -38,6 +36,18 @@ public interface DonationDao {
     public List<DonateProject> selectAllDonateProjectByAgencyId(Long agencyId);
 
     // 특정 단체의 프로젝트 상세 조회
-    public DonateProject selectOneDonateProjectById(Long id);
+    public DonateProject selectOneDonateProjectById(Long projectId);
 
+    // 프로젝트에 기부금 추가
+    public int updateAmountForDonateProject(DonationRequest donationRequest);
+
+    /* 피스타치오와 단체 */
+    // 피스타치오 프로젝트 가입
+    public int insertAffiliation(AffiliationRequest affiliationRequest);
+
+    // 해당 유저 가입 정보 확인
+    public long selectAffiliationByUserId(long userId);
+
+    // 피스타치오 프로젝트 탈퇴
+    public int deleteAffiliation(long userId);
 }

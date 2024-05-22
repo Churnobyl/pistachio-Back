@@ -11,6 +11,8 @@ public class UserResponse {
     private long pista;
     private boolean isAdmin;
     private long userType;
+    private long affiliatedProjectId;
+    private String affiliatedProjectName;
     private long followingCnt;
     private long followerCnt;
 
@@ -27,6 +29,8 @@ public class UserResponse {
                         long pista,
                         boolean isAdmin,
                         long userType,
+                        long affiliatedProjectId,
+                        String affiliatedProjectName,
                         long followingCnt,
                         long followerCnt) {
         this.userId = userId;
@@ -39,6 +43,8 @@ public class UserResponse {
         this.pista = pista;
         this.isAdmin = isAdmin;
         this.userType = userType;
+        this.affiliatedProjectId = affiliatedProjectId;
+        this.affiliatedProjectName = affiliatedProjectName;
         this.followingCnt = followingCnt;
         this.followerCnt = followerCnt;
     }
@@ -121,6 +127,22 @@ public class UserResponse {
 
     public void setUserType(long userType) {
         this.userType = userType;
+    }
+
+    public long getAffiliatedProjectId() {
+        return affiliatedProjectId;
+    }
+
+    public void setAffiliatedProjectId(long affiliatedProjectId) {
+        this.affiliatedProjectId = affiliatedProjectId;
+    }
+
+    public String getAffiliatedProjectName() {
+        return affiliatedProjectName;
+    }
+
+    public void setAffiliatedProjectName(String affiliatedProjectName) {
+        this.affiliatedProjectName = affiliatedProjectName;
     }
 
     public long getFollowingCnt() {
