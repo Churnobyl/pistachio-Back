@@ -8,7 +8,8 @@ CREATE TABLE membership
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    agency_profile_url VARCHAR(255)
+    agency_profile_url VARCHAR(255),
+    UNIQUE(name)
 );
 
 -- 기부 프로젝트 테이블 생성

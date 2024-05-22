@@ -34,8 +34,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
 
-    private final long USER_ROLE = 1; // 1 : 일반 유저로 회원가입
-
     public UserServiceImpl(UserDao userDao,
                            RedisUtil redisUtil,
                            PasswordEncoder passwordEncoder,
@@ -57,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         userDao.createUser(addUserRequest);
-        userDao.setRole(addUserRequest.getId(), USER_ROLE);
+        userDao.setRole(addUserRequest.getId(), addUserRequest.getRole());
 
         return 1;
     }

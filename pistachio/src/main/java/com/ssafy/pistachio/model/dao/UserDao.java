@@ -42,6 +42,9 @@ public interface UserDao {
     // 유저 수정
     public int updateUser(User user);
 
+    // 유저 소속 단체 수정
+    public int updateUserMembership(@Param("userId") Long userId, @Param("membershipId") Long membershipId);
+
     // 유저 탈퇴
     public int inactivateUser(User user);
 
@@ -75,4 +78,7 @@ public interface UserDao {
 
     /* role 추가 */
     public int setRole(@Param("userId") long userId, @Param("roleId") long roleId);
+
+    /* role 확인 */
+    public int getRole(@Param("userId") long userId);
 }

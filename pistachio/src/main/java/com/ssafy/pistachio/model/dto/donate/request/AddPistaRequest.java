@@ -1,10 +1,10 @@
-package com.ssafy.pistachio.model.dto.user.request;
+package com.ssafy.pistachio.model.dto.donate.request;
 
-public class ChangePistaRequest {
+public class AddPistaRequest {
     private Long userId;
     private Long pistaAmount;
 
-    public ChangePistaRequest(Long userId, Long pistaAmount) {
+    public AddPistaRequest(Long userId, Long pistaAmount) {
         this.userId = userId;
         this.pistaAmount = pistaAmount;
     }
