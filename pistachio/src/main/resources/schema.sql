@@ -39,6 +39,8 @@ CREATE TABLE user
     user_profile VARCHAR(255),
     is_admin BOOL DEFAULT false,
     is_activate BOOL DEFAULT true,
+    following_count BIGINT DEFAULT 0,
+    follower_count BIGINT DEFAULT 0,
     CONSTRAINT FK_user_membership_id FOREIGN KEY (membership_id)
     REFERENCES membership(id)
 );
@@ -57,10 +59,10 @@ CREATE TABLE follow
 (
 	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     following_id BIGINT NOT NULL,
-    followed_id BIGINT NOT NULL,
+    follower_id BIGINT NOT NULL,
     CONSTRAINT FK_following_id FOREIGN KEY(following_id)
     REFERENCES user(id) ON DELETE CASCADE,
-    CONSTRAINT FK_followed_id FOREIGN KEY(followed_id)
+    CONSTRAINT FK_follower_id FOREIGN KEY(follower_id)
     REFERENCES user(id) ON DELETE CASCADE
 );
 

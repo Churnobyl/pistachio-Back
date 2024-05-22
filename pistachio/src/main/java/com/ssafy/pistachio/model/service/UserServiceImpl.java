@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -159,5 +160,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         // 유효 시간(5분)동안 {email, authKey} 저장
         redisUtil.setDataExpire(authKey, email, 60 * 5L);
+    }
+
+    @Transactional
+    @Override
+    public void batchUpdateFollow(Long userId, Map<Long, Boolean> followStatusMap) {
+        List<Long> currentFollowIds = userDao.getFollowerIdByUserId(userId);
+
+        for (Map.Entry<Long, Boolean> entry : followStatusMap.entrySet()) {
+            Long followerId = entry.getKey();
+            Boolean isFollow = entry.getValue();
+
+            boolean currentlyFollowing = currentFollowIds.contains(followerId);
+
+            if (isFollow && !currentlyFollowing) {
+                // 팔로우를 추가
+                userDao.addFollow(userId, followerId);
+                userDao.addFollowingCount(userId);
+                userDao.addFollowerCount(followerId);
+            } else if (!isFollow && currentlyFollowing) {
+                // 팔로우를 삭제
+                userDao.deleteFollow(userId, followerId);
+                userDao.subFollowingCount(userId);
+                userDao.subFollowerCount(followerId);
+            }
+        }
     }
 }

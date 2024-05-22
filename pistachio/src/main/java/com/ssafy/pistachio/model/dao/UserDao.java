@@ -6,6 +6,7 @@ import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
 import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
 import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -44,7 +45,22 @@ public interface UserDao {
     // 유저 탈퇴
     public int inactivateUser(User user);
 
+    // 유저 아이디로 롤 찾기
     List<String> findRolesByUserId(Long userId);
+
+    // 팔로우 추가
+    public void addFollow(Long followingUserId, Long followerUserId);
+
+    // 팔로우 제거
+    public void deleteFollow(Long followingUserId, Long followerUserId);
+
+    @Select("SELECT follower_id FROM follow WHERE following_id = #{userId}")
+    List<Long> getFollowerIdByUserId(@Param("userId") Long userId);
+
+    void addFollowingCount(@Param("userId") Long userId);
+    void subFollowingCount(@Param("userId") Long userId);
+    void addFollowerCount(@Param("userId") Long userId);
+    void subFollowerCount(@Param("userId") Long userId);
 
     /* 프로필 사진 */
 
