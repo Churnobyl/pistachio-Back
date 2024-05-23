@@ -6,6 +6,8 @@ import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponse;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
+import com.ssafy.pistachio.model.dto.feed.response.InterestResponse;
+import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.s3.S3FileDto;
 
 import java.util.List;
@@ -42,4 +44,7 @@ public interface FeedService {
 
     // 좋아요 업데이트
     void batchUpdateLikes(Long userId, Map<Long, Boolean> likeStatusMap);
+
+    // 관심 프로젝트 얻기
+    List<InterestResponse> getInterestByUser(User dbUser);
 }

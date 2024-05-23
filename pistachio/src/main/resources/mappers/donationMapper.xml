@@ -136,7 +136,7 @@
 
 <!--    해당 유저 가입 정보 확인-->
     <select id="selectAffiliationByUserId" parameterType="long">
-        SELECT count(id) FROM affiliated
+        SELECT project_id FROM affiliated
         WHERE donated_user_id = #{userId}
     </select>
 
@@ -145,5 +145,16 @@
         DELETE FROM affiliated
         WHERE donated_user_id = #{userId}
     </delete>
+
+    <select id="selectInterestResponseByUserId" parameterType="long">
+        SELECT
+        ip.project_id as projectId,
+        dp.name as projectName
+        FROM interesting_project ip
+        LEFT JOIN donate_project dp
+        ON ip.project_id = dp.id
+        WHERE ip.user_id = #{userId}
+        ORDER BY count desc
+    </select>
 
 </mapper>

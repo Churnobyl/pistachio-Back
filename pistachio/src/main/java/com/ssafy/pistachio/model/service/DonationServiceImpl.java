@@ -117,12 +117,14 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public int signupProject(long userId,
                              AffiliationRequest affiliationRequest) throws IllegalArgumentException {
-        long result = donationDao.selectAffiliationByUserId(userId);
+        Long result = donationDao.selectAffiliationByUserId(userId);
 
-        if (result > 0) {
-            throw new IllegalArgumentException("이미 가입된 프로젝트가 있습니다.");
-        } else if (userDao.getRole(userId) != PISTACHIO_ROLE) {
-            throw new IllegalArgumentException("피스타치오만 가입할 수 있습니다.");
+        if (result != null) {
+            if (result > 0) {
+                throw new IllegalArgumentException("이미 가입된 프로젝트가 있습니다.");
+            } else if (userDao.getRole(userId) != PISTACHIO_ROLE) {
+                throw new IllegalArgumentException("피스타치오만 가입할 수 있습니다.");
+            }
         }
 
         affiliationRequest.setUserId(userId);
@@ -135,9 +137,9 @@ public class DonationServiceImpl implements DonationService {
     @Transactional
     @Override
     public int signoutProject(long userId) throws IllegalArgumentException {
-        long result = donationDao.selectAffiliationByUserId(userId);
+        Long result = donationDao.selectAffiliationByUserId(userId);
 
-        if (result == 0) {
+        if (result == null) {
             throw new IllegalArgumentException("가입된 프로젝트가 없습니다.");
         } else if (userDao.getRole(userId) != PISTACHIO_ROLE) {
             throw new IllegalArgumentException("피스타치오만 탈퇴할 수 있습니다.");
