@@ -7,6 +7,7 @@ import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
 import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
+import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
@@ -101,11 +102,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User getUserByName(String name) {
-        return userDao.getUserByName(name);
-    }
-
-    @Override
     public User getUserByEmail(String email) {
         User user = userDao.getUserByEmail(email);
         if (user != null) {
@@ -113,6 +109,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setRoles(roles);
         }
         return user;
+    }
+
+    @Override
+    public UserResponse getUserByIdForResponse(long userId) {
+        return userDao.getUserByIdForResponse(userId);
     }
 
     @Override

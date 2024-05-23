@@ -5,6 +5,7 @@ import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
 import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
+import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 import com.ssafy.pistachio.model.service.UserService;
 import com.ssafy.pistachio.s3.AmazonS3Service;
 import com.ssafy.pistachio.s3.S3FileDto;
@@ -40,6 +41,17 @@ public class UserController {
         }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("{userId}")
+    public ResponseEntity<?> getUser(@PathVariable("userId") long userId) {
+        UserResponse userResponse = userService.getUserByIdForResponse(userId);
+
+        if (userResponse == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
     @GetMapping("/validate/emails/{email}/exists")

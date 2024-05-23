@@ -5,6 +5,7 @@ import com.ssafy.pistachio.model.dto.user.SearchCondition;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.dto.user.request.AddUserRequest;
 import com.ssafy.pistachio.model.dto.user.request.UserLoginRequest;
+import com.ssafy.pistachio.model.dto.user.response.UserResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
@@ -29,11 +30,11 @@ public interface UserService {
 
     public void authEmail(EmailRequestDto emailRequestDto);
 
-    // 유저 이름으로 조회
-    public User getUserByName(String name);
-
     // 유저 이메일로 조회
     public User getUserByEmail(String email);
+
+    // 유저 아이디로 조회
+    public UserResponse getUserByIdForResponse(long id);
 
     // 유저 수정
     public int modifyUser(User user);

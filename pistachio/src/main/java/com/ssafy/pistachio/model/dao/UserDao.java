@@ -31,7 +31,7 @@ public interface UserDao {
     public User getUserByName(String name);
 
     // 유저 번호 조회
-    public User getUserById(long id);
+    public User getUserById(long userId);
 
     // 유저 번호 조회 (response)
     public UserResponse getUserByIdForResponse(@Param("id") long id);
