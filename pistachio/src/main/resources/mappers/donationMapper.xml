@@ -59,23 +59,51 @@
 <!--    단체의 프로젝트 생성-->
     <insert id="createDonateProject" parameterType="addDonateProjectRequest">
         INSERT INTO donate_project
-        (agency_id, name, description, target_donation_amount, start_time, end_time)
+        (agency_id, name, description, image, target_donation_amount, start_time, end_time)
         VALUES
-        (#{agencyId}, #{name}, #{description}, #{targetDonationAmount}, #{startTime}, #{endTime})
+        (#{agencyId}, #{name}, #{description}, #{image}, #{targetDonationAmount}, #{startTime}, #{endTime})
     </insert>
 
 <!--    특정 단체의 프로젝트 전체 조회-->
     <select id="selectAllDonateProjectByAgencyId" parameterType="long">
-        SELECT *
-        FROM donate_project
-        WHERE agency_id = #{agencyId}
+        SELECT
+        dp.id as id,
+        dp.agency_id as agencyId,
+        m.name as agencyName,
+        dp.name as name,
+        dp.description as description,
+        dp.participants as participants,
+        dp.image as image,
+        dp.current_donation_amount as current_donation_amount,
+        dp.target_donation_amount as target_donation_amount,
+        dp.start_time as start_time,
+        dp.end_time as end_time,
+        dp.is_end as is_end
+        FROM donate_project dp
+        LEFT JOIN membership m
+        ON dp.agency_id = m.id
+        WHERE dp.agency_id = #{agencyId}
     </select>
 
 <!--    특정 단체의 프로젝트 상세 조회-->
     <select id="selectOneDonateProjectById" parameterType="long">
-        SELECT *
-        FROM donate_project
-        WHERE id = #{projectId}
+        SELECT
+        dp.id as id,
+        dp.agency_id as agencyId,
+        m.name as agencyName,
+        dp.name as name,
+        dp.description as description,
+        dp.participants as participants,
+        dp.image as image,
+        dp.current_donation_amount as current_donation_amount,
+        dp.target_donation_amount as target_donation_amount,
+        dp.start_time as start_time,
+        dp.end_time as end_time,
+        dp.is_end as is_end
+        FROM donate_project dp
+        LEFT JOIN membership m
+        ON dp.agency_id = m.id
+        WHERE dp.id = #{projectId}
     </select>
 
     <update id="updateAmountForDonateProject" parameterType="donationRequest">

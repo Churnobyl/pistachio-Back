@@ -6,6 +6,7 @@ public class AddDonateProjectRequest {
     private Long agencyId;
     private String name;
     private String description;
+    private String image;
     private Long targetDonationAmount;
     private Date startTime;
     private Date endTime;
@@ -13,12 +14,14 @@ public class AddDonateProjectRequest {
     public AddDonateProjectRequest(Long agencyId,
                                    String name,
                                    String description,
+                                   String image,
                                    Long targetDonationAmount,
                                    Date startTime,
                                    Date endTime) {
         this.agencyId = agencyId;
         this.name = name;
         this.description = description;
+        this.image = image;
         this.targetDonationAmount = targetDonationAmount;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -46,6 +49,14 @@ public class AddDonateProjectRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Long getTargetDonationAmount() {
@@ -78,6 +89,7 @@ public class AddDonateProjectRequest {
                 "agencyId=" + agencyId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", image='" + image + '\'' +
                 ", targetDonationAmount=" + targetDonationAmount +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
