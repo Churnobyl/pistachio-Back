@@ -122,8 +122,8 @@ public class DonateController {
         try {
             S3FileDto uploadFile = uploadFiles.get(0);
             addDonateProjectRequest.setImage(uploadFile.getUploadFilepath() + "/" + uploadFile.getUploadFileName());
-            donationService.makeDonateProject(dbUser.getId(), addDonateProjectRequest);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            Long projectId = donationService.makeDonateProject(dbUser.getId(), addDonateProjectRequest);
+            return new ResponseEntity<>(projectId, HttpStatus.CREATED);
         } catch (Exception e) {
             System.err.println(e.toString());
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

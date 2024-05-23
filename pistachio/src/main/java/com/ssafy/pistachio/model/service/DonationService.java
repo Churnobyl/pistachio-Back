@@ -27,7 +27,7 @@ public interface DonationService {
     /* 프로젝트 */
 
     // 단체의 프로젝트 생성
-    public int makeDonateProject(Long userId, AddDonateProjectRequest addDonateProjectRequest);
+    public long makeDonateProject(Long userId, AddDonateProjectRequest addDonateProjectRequest);
 
     // 특정 단체의 프로젝트 전체 조회
     public List<DonateProjectResponse> getDonateProjectsByAgencyId(Long agencyId);

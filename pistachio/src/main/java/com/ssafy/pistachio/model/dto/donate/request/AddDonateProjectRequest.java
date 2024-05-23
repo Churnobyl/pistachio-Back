@@ -3,6 +3,7 @@ package com.ssafy.pistachio.model.dto.donate.request;
 import java.util.Date;
 
 public class AddDonateProjectRequest {
+    private Long id;
     private Long agencyId;
     private String name;
     private String description;
@@ -11,13 +12,18 @@ public class AddDonateProjectRequest {
     private Date startTime;
     private Date endTime;
 
-    public AddDonateProjectRequest(Long agencyId,
+    public AddDonateProjectRequest() {
+    }
+
+    public AddDonateProjectRequest(Long id,
+                                   Long agencyId,
                                    String name,
                                    String description,
                                    String image,
                                    Long targetDonationAmount,
                                    Date startTime,
                                    Date endTime) {
+        this.id = id;
         this.agencyId = agencyId;
         this.name = name;
         this.description = description;
@@ -25,6 +31,14 @@ public class AddDonateProjectRequest {
         this.targetDonationAmount = targetDonationAmount;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getAgencyId() {
@@ -86,6 +100,7 @@ public class AddDonateProjectRequest {
     @Override
     public String toString() {
         return "AddDonateProjectRequest{" +
+                "id=" + id +
                 "agencyId=" + agencyId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

@@ -46,6 +46,12 @@
         (#{projectId}, #{userId}, #{amount})
     </insert>
 
+    <update id="updateBoast" parameterType="feedRequest">
+        UPDATE donation
+        SET is_boast = true
+        WHERE user_id = #{userId} AND project_id = #{projectId}
+    </update>
+
 <!--    단체 생성-->
     <insert id="createMembership" parameterType="addMembershipRequest" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO membership
@@ -57,7 +63,7 @@
     <!-- 프로젝트 -->
 
 <!--    단체의 프로젝트 생성-->
-    <insert id="createDonateProject" parameterType="addDonateProjectRequest">
+    <insert id="createDonateProject" parameterType="addDonateProjectRequest" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO donate_project
         (agency_id, name, description, image, target_donation_amount, start_time, end_time)
         VALUES
@@ -109,6 +115,12 @@
     <update id="updateAmountForDonateProject" parameterType="donationRequest">
         UPDATE donate_project
         SET current_donation_amount = current_donation_amount + ${amount}
+        WHERE id = #{projectId}
+    </update>
+
+    <update id="updateProjectParticipant" parameterType="long">
+        UPDATE donate_project
+        SET participants = participants + 1
         WHERE id = #{projectId}
     </update>
 
