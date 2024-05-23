@@ -19,6 +19,8 @@ CREATE TABLE donate_project
     agency_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
+    participants BIGINT DEFAULT 0,
+    image VARCHAR(255),
     current_donation_amount BIGINT DEFAULT 0,
     target_donation_amount BIGINT NOT NULL,
     start_time DATETIME NOT NULL,
@@ -72,6 +74,19 @@ CREATE TABLE follow
     REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT FK_follower_id FOREIGN KEY(follower_id)
     REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- 관심있는 프로젝트 테이블 생성
+CREATE TABLE interesting_project
+(
+	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    project_id BIGINT NOT NULL,
+    count BIGINT DEFAULT 0,
+    CONSTRAINT FK_interesting_project_user_id FOREIGN KEY(user_id)
+    REFERENCES user(id) ON DELETE CASCADE,
+    CONSTRAINT FK_interesting_project_project_id FOREIGN KEY(project_id)
+    REFERENCES donate_project(id) ON DELETE CASCADE
 );
 
 -- 기부 테이블 생성

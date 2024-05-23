@@ -4,6 +4,7 @@ import com.ssafy.pistachio.model.dto.donate.DonateProject;
 import com.ssafy.pistachio.model.dto.donate.Donation;
 import com.ssafy.pistachio.model.dto.donate.Membership;
 import com.ssafy.pistachio.model.dto.donate.request.*;
+import com.ssafy.pistachio.model.dto.donate.response.DonateProjectResponse;
 import com.ssafy.pistachio.model.dto.donate.response.DonationResponse;
 
 import java.util.List;
@@ -33,10 +34,10 @@ public interface DonationDao {
     public int createDonateProject(AddDonateProjectRequest addDonateProjectRequest);
 
     // 특정 단체의 프로젝트 전체 조회
-    public List<DonateProject> selectAllDonateProjectByAgencyId(Long agencyId);
+    public List<DonateProjectResponse> selectAllDonateProjectByAgencyId(Long agencyId);
 
     // 특정 단체의 프로젝트 상세 조회
-    public DonateProject selectOneDonateProjectById(Long projectId);
+    public DonateProjectResponse selectOneDonateProjectById(Long projectId);
 
     // 프로젝트에 기부금 추가
     public int updateAmountForDonateProject(DonationRequest donationRequest);

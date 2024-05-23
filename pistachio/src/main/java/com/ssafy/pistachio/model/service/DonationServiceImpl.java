@@ -5,12 +5,14 @@ import com.ssafy.pistachio.model.dao.UserDao;
 import com.ssafy.pistachio.model.dto.donate.DonateProject;
 import com.ssafy.pistachio.model.dto.donate.Donation;
 import com.ssafy.pistachio.model.dto.donate.request.*;
+import com.ssafy.pistachio.model.dto.donate.response.DonateProjectResponse;
 import com.ssafy.pistachio.model.dto.donate.response.DonationResponse;
 import com.ssafy.pistachio.model.dto.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DonationServiceImpl implements DonationService {
@@ -42,11 +44,11 @@ public class DonationServiceImpl implements DonationService {
     @Override
     public int donation(Long userId, DonationRequest donationRequest) throws IllegalArgumentException {
         User user = userDao.getUserById(userId);
-        DonateProject donateProject = donationDao.selectOneDonateProjectById(donationRequest.getProjectId());
+        DonateProjectResponse donateProject = donationDao.selectOneDonateProjectById(donationRequest.getProjectId());
 
         if (user.getPista() < donationRequest.getAmount()) {
             throw new IllegalArgumentException("돈이 적음");
-        } else if (user.getMembershipId() == donateProject.getAgencyId()) {
+        } else if (Objects.equals(user.getMembershipId(), donateProject.getAgencyId())) {
             throw  new IllegalArgumentException("본인이 소속된 단체에는 기부할 수 없습니다.");
         }
 
@@ -86,12 +88,12 @@ public class DonationServiceImpl implements DonationService {
     }
 
     @Override
-    public List<DonateProject> getDonateProjectsByAgencyId(Long agencyId) {
+    public List<DonateProjectResponse> getDonateProjectsByAgencyId(Long agencyId) {
         return donationDao.selectAllDonateProjectByAgencyId(agencyId);
     }
 
     @Override
-    public DonateProject getDonateProjectById(Long donateProjectId) {
+    public DonateProjectResponse getDonateProjectById(Long donateProjectId) {
         return donationDao.selectOneDonateProjectById(donateProjectId);
     }
 
@@ -108,7 +110,7 @@ public class DonationServiceImpl implements DonationService {
         }
 
         affiliationRequest.setUserId(userId);
-        DonateProject donateProject = donationDao.selectOneDonateProjectById(affiliationRequest.getProjectId());
+        DonateProjectResponse donateProject = donationDao.selectOneDonateProjectById(affiliationRequest.getProjectId());
         donationDao.insertAffiliation(affiliationRequest);
         userDao.updateUserMembership(affiliationRequest.getUserId(), donateProject.getAgencyId());
         return 1;

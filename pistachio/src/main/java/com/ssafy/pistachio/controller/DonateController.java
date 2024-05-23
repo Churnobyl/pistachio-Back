@@ -2,14 +2,18 @@ package com.ssafy.pistachio.controller;
 
 import com.ssafy.pistachio.model.dto.donate.Donation;
 import com.ssafy.pistachio.model.dto.donate.request.*;
+import com.ssafy.pistachio.model.dto.donate.response.DonateProjectResponse;
 import com.ssafy.pistachio.model.dto.donate.response.DonationResponse;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.service.DonationService;
 import com.ssafy.pistachio.model.service.UserService;
+import com.ssafy.pistachio.s3.AmazonS3Service;
+import com.ssafy.pistachio.s3.S3FileDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,11 +23,14 @@ public class DonateController {
 
     private final UserService userService;
     private final DonationService donationService;
+    private final AmazonS3Service amazonS3Service;
 
     public DonateController(UserService userService,
-                            DonationService donationService) {
+                            DonationService donationService,
+                            AmazonS3Service amazonS3Service) {
         this.userService = userService;
         this.donationService = donationService;
+        this.amazonS3Service = amazonS3Service;
     }
 
     @PostMapping("")
@@ -95,8 +102,11 @@ public class DonateController {
     }
 
     @PostMapping("/project")
-    public ResponseEntity<?> createDonateProject(HttpSession session,
-                                                 @RequestBody AddDonateProjectRequest addDonateProjectRequest) {
+    public ResponseEntity<?> createDonateProject(
+            HttpSession session,
+            @RequestPart("projectRequest") AddDonateProjectRequest addDonateProjectRequest,
+            @RequestPart("file") List<MultipartFile> multipartFiles
+    ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
 
@@ -106,7 +116,12 @@ public class DonateController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        List<S3FileDto> uploadFiles = amazonS3Service.uploadFiles(session, "project", multipartFiles);
+
+        // db에 저장
         try {
+            S3FileDto uploadFile = uploadFiles.get(0);
+            addDonateProjectRequest.setImage(uploadFile.getUploadFilepath() + "/" + uploadFile.getUploadFileName());
             donationService.makeDonateProject(dbUser.getId(), addDonateProjectRequest);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
@@ -114,6 +129,36 @@ public class DonateController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    @GetMapping("/membership/{agencyId}")
+    public ResponseEntity<?> getDonateProjectsByAgencyId(HttpSession session,
+                                                         @PathVariable("agencyId") long agencyId) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+
+        if (dbUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        List<DonateProjectResponse> donateProjectResponses = donationService.getDonateProjectsByAgencyId(agencyId);
+        return ResponseEntity.ok(donateProjectResponses);
+    }
+
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<?> getDonateProjectByProjectId(HttpSession session,
+                                                         @PathVariable("projectId") long projectId) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+
+        if (dbUser == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        DonateProjectResponse donateProjectResponse = donationService.getDonateProjectById(projectId);
+        return ResponseEntity.ok(donateProjectResponse);
+    }
+
+
 
     @PostMapping("/affiliate")
     public ResponseEntity<?> signupProjectForPistachio(HttpSession session,

@@ -28,18 +28,21 @@ public class FeedServiceImpl implements FeedService {
     private final CommentDao commentDao;
     private final FeedPictureDao feedPictureDao;
     private final FeedLikeDao feedLikeDao;
+    private final InterestingProjectDao interestingProjectDao;
 
     public FeedServiceImpl(FeedDao feedDao,
                            UserDao userDao,
                            CommentDao commentDao,
                            FeedPictureDao feedPictureDao,
-                           FeedLikeDao feedLikeDao
+                           FeedLikeDao feedLikeDao,
+                           InterestingProjectDao interestingProjectDao
     ) {
         this.feedDao = feedDao;
         this.userDao = userDao;
         this.commentDao = commentDao;
         this.feedPictureDao = feedPictureDao;
         this.feedLikeDao = feedLikeDao;
+        this.interestingProjectDao = interestingProjectDao;
     }
 
     @Transactional
@@ -214,6 +217,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Transactional
+    @Override
     public void batchUpdateLikes(Long userId, Map<Long, Boolean> likeStatusMap) {
         // 현재 유저의 모든 좋아요 상태를 가져옴
         List<Long> currentLikedPostIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
@@ -222,6 +226,7 @@ public class FeedServiceImpl implements FeedService {
             Long feedId = entry.getKey();
             Boolean isLiked = entry.getValue();
 
+            Feed feed = feedDao.getFeed(feedId);
             boolean currentlyLiked = currentLikedPostIds.contains(feedId);
 
             if (isLiked && !currentlyLiked) {
