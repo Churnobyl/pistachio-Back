@@ -10,6 +10,7 @@ public class FeedRequest {
     private Long projectId;
     private String content;
     private List<String> pictureUrls;
+    private boolean isBoast;
 
     public FeedRequest() {
     }
@@ -17,11 +18,13 @@ public class FeedRequest {
     public FeedRequest(Long userId,
                        Long projectId,
                        String content,
-                       List<String> pictureUrls) {
+                       List<String> pictureUrls,
+                       boolean isBoast) {
         this.userId = userId;
         this.projectId = projectId;
         this.content = content;
         this.pictureUrls = pictureUrls;
+        this.isBoast = isBoast;
     }
 
     public Long getId() {
@@ -64,6 +67,14 @@ public class FeedRequest {
         this.pictureUrls = pictureUrls;
     }
 
+    public boolean isBoast() {
+        return isBoast;
+    }
+
+    public void setBoast(boolean boast) {
+        isBoast = boast;
+    }
+
     @Override
     public String toString() {
         return "FeedRequest{" +
@@ -71,6 +82,8 @@ public class FeedRequest {
                 "userId=" + userId +
                 ", projectId=" + projectId +
                 ", content='" + content + '\'' +
+                ", pictureUrls=" + pictureUrls +
+                ", isBoast=" + isBoast +
                 '}';
     }
 }

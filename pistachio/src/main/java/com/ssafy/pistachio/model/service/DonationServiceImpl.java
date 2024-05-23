@@ -49,13 +49,27 @@ public class DonationServiceImpl implements DonationService {
         if (user.getPista() < donationRequest.getAmount()) {
             throw new IllegalArgumentException("돈이 적음");
         } else if (Objects.equals(user.getMembershipId(), donateProject.getAgencyId())) {
-            throw  new IllegalArgumentException("본인이 소속된 단체에는 기부할 수 없습니다.");
+            throw new IllegalArgumentException("본인이 소속된 단체에는 기부할 수 없습니다.");
         }
 
         donationRequest.setUserId(userId);
+
+        List<DonationResponse> donationResponses = donationDao.selectAllByUserId(userId);
+
+        boolean isNew = true;
+
+        for (DonationResponse donationResponse : donationResponses) {
+            if (donationResponse.getProjectId() == donationRequest.getProjectId()) {
+                isNew = false;
+            }
+        }
+
         donationDao.createDonation(donationRequest);
         donationDao.updateAmountForDonateProject(donationRequest);
         donationDao.subPista(donationRequest);
+        if (isNew) {
+            donationDao.updateProjectParticipant(donationRequest.getProjectId());
+        }
         return 1;
     }
 
@@ -76,7 +90,7 @@ public class DonationServiceImpl implements DonationService {
 
     @Transactional
     @Override
-    public int makeDonateProject(Long userId, AddDonateProjectRequest addDonateProjectRequest) throws IllegalArgumentException {
+    public long makeDonateProject(Long userId, AddDonateProjectRequest addDonateProjectRequest) throws IllegalArgumentException {
         User user = userDao.getUserById(userId);
 
         if (user.getMembershipId() == NORMAL_MEMBERSHIP_ID) {
@@ -84,7 +98,9 @@ public class DonationServiceImpl implements DonationService {
         }
 
         addDonateProjectRequest.setAgencyId(user.getMembershipId());
-        return donationDao.createDonateProject(addDonateProjectRequest);
+        donationDao.createDonateProject(addDonateProjectRequest);
+
+        return addDonateProjectRequest.getId();
     }
 
     @Override
@@ -106,7 +122,7 @@ public class DonationServiceImpl implements DonationService {
         if (result > 0) {
             throw new IllegalArgumentException("이미 가입된 프로젝트가 있습니다.");
         } else if (userDao.getRole(userId) != PISTACHIO_ROLE) {
-            throw  new IllegalArgumentException("피스타치오만 가입할 수 있습니다.");
+            throw new IllegalArgumentException("피스타치오만 가입할 수 있습니다.");
         }
 
         affiliationRequest.setUserId(userId);
@@ -124,7 +140,7 @@ public class DonationServiceImpl implements DonationService {
         if (result == 0) {
             throw new IllegalArgumentException("가입된 프로젝트가 없습니다.");
         } else if (userDao.getRole(userId) != PISTACHIO_ROLE) {
-            throw  new IllegalArgumentException("피스타치오만 탈퇴할 수 있습니다.");
+            throw new IllegalArgumentException("피스타치오만 탈퇴할 수 있습니다.");
         }
 
         donationDao.deleteAffiliation(userId);

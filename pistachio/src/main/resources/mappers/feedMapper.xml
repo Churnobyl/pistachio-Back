@@ -6,9 +6,9 @@
     <!--    피드 작성-->
     <insert id="createFeed" parameterType="feedRequest" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO feed
-        (user_id, project_id, content)
+        (user_id, project_id, content, is_boast)
         VALUES
-        (#{userId}, #{projectId}, #{content})
+        (#{userId}, #{projectId}, #{content}, #{isBoast})
     </insert>
 
     <!--    사진 추가-->

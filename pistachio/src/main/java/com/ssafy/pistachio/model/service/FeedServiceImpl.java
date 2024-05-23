@@ -29,20 +29,22 @@ public class FeedServiceImpl implements FeedService {
     private final FeedPictureDao feedPictureDao;
     private final FeedLikeDao feedLikeDao;
     private final InterestingProjectDao interestingProjectDao;
+    private final DonationDao donationDao;
 
     public FeedServiceImpl(FeedDao feedDao,
                            UserDao userDao,
                            CommentDao commentDao,
                            FeedPictureDao feedPictureDao,
                            FeedLikeDao feedLikeDao,
-                           InterestingProjectDao interestingProjectDao
-    ) {
+                           InterestingProjectDao interestingProjectDao,
+                           DonationDao donationDao) {
         this.feedDao = feedDao;
         this.userDao = userDao;
         this.commentDao = commentDao;
         this.feedPictureDao = feedPictureDao;
         this.feedLikeDao = feedLikeDao;
         this.interestingProjectDao = interestingProjectDao;
+        this.donationDao = donationDao;
     }
 
     @Transactional
@@ -66,6 +68,11 @@ public class FeedServiceImpl implements FeedService {
         }
 
         feedDao.addPicturesToFeed(picturesIdMounted);
+
+        if (feedRequest.isBoast()) {
+            donationDao.updateBoast(feedRequest);
+        }
+
         return (int) feedId;
     }
 

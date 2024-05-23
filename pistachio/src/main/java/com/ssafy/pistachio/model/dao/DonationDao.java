@@ -6,6 +6,7 @@ import com.ssafy.pistachio.model.dto.donate.Membership;
 import com.ssafy.pistachio.model.dto.donate.request.*;
 import com.ssafy.pistachio.model.dto.donate.response.DonateProjectResponse;
 import com.ssafy.pistachio.model.dto.donate.response.DonationResponse;
+import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
 
 import java.util.List;
 
@@ -23,6 +24,9 @@ public interface DonationDao {
     // 기부하기
     public int createDonation(DonationRequest donationRequest);
 
+    // 자랑 여부 업데이트
+    public int updateBoast(FeedRequest feedRequest);
+
 
     /* 단체 */
     // 단체 생성
@@ -31,7 +35,7 @@ public interface DonationDao {
     /* 프로젝트 */
 
     // 단체의 프로젝트 생성
-    public int createDonateProject(AddDonateProjectRequest addDonateProjectRequest);
+    public long createDonateProject(AddDonateProjectRequest addDonateProjectRequest);
 
     // 특정 단체의 프로젝트 전체 조회
     public List<DonateProjectResponse> selectAllDonateProjectByAgencyId(Long agencyId);
@@ -41,6 +45,9 @@ public interface DonationDao {
 
     // 프로젝트에 기부금 추가
     public int updateAmountForDonateProject(DonationRequest donationRequest);
+
+    // 프로젝트 참여자 추가
+    public int updateProjectParticipant(long projectId);
 
     /* 피스타치오와 단체 */
     // 피스타치오 프로젝트 가입
