@@ -31,6 +31,8 @@ public class FeedServiceImpl implements FeedService {
     private final InterestingProjectDao interestingProjectDao;
     private final DonationDao donationDao;
 
+    private final Long NORMAL_PROJECT_ID = 1L;
+
     public FeedServiceImpl(FeedDao feedDao,
                            UserDao userDao,
                            CommentDao commentDao,
@@ -240,10 +242,38 @@ public class FeedServiceImpl implements FeedService {
                 // 좋아요를 추가
                 feedLikeDao.insertLike(feedId, userId);
                 feedLikeDao.addLikeCount(feedId);
+
+                Long projectId = feed.getProjectId();
+                Long currCount = interestingProjectDao.getCount(userId, projectId);
+
+                if (Objects.equals(projectId, NORMAL_PROJECT_ID)) {
+                    continue;
+                } else
+
+                if (currCount != null) {
+                    interestingProjectDao.updateCount(userId, projectId, 1L);
+                } else {
+                    interestingProjectDao.insertInterestingProject(userId, projectId, 1L);
+                }
             } else if (!isLiked && currentlyLiked) {
                 // 좋아요를 삭제
                 feedLikeDao.deleteLike(feedId, userId);
                 feedLikeDao.subLikeCount(feedId);
+
+                Long projectId = feed.getProjectId();
+                Long currCount = interestingProjectDao.getCount(userId, projectId);
+
+                if (Objects.equals(projectId, NORMAL_PROJECT_ID)) {
+                    continue;
+                }
+
+                if (currCount != null) {
+                    if (currCount == 1) {
+                        interestingProjectDao.deleteInterestingProject(userId, projectId);
+                    } else {
+                        interestingProjectDao.updateCount(userId, projectId, -1L);
+                    }
+                }
             }
         }
     }

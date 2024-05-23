@@ -70,7 +70,9 @@
         u.is_admin as isAdmin,
         ur.role_id as userType,
         af.project_id as affiliatedProjectId,
-        dp.name as affiliatedProjectName
+        dp.name as affiliatedProjectName,
+        u.following_count as followingCnt,
+        u.follower_count as followerCnt
         FROM user u
         LEFT JOIN user_role ur
         ON u.id = ur.user_id
