@@ -9,7 +9,6 @@ public interface InterestingProjectDao {
     Long getCount(@Param("userId") Long userId, @Param("projectId") Long projectId);
 
     @Insert("INSERT INTO interesting_project (user_id, project_id, count) VALUES (#{userId}, #{projectId}, #{count})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertInterestingProject(@Param("userId") Long userId, @Param("projectId") Long projectId, @Param("count") Long count);
 
     @Update("UPDATE interesting_project SET count = count + #{increment} WHERE user_id = #{userId} AND project_id = #{projectId}")
