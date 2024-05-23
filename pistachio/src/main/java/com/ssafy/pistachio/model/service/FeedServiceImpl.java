@@ -1,16 +1,17 @@
 package com.ssafy.pistachio.model.service;
 
 import com.ssafy.pistachio.model.dao.*;
-import com.ssafy.pistachio.model.dto.comment.FeedComment;
 import com.ssafy.pistachio.model.dto.comment.request.AddCommentRequest;
 import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
+import com.ssafy.pistachio.model.dto.donate.response.DonateProjectResponse;
 import com.ssafy.pistachio.model.dto.feed.Feed;
 import com.ssafy.pistachio.model.dto.feed.FeedPicture;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
+import com.ssafy.pistachio.model.dto.feed.request.PictureRequest;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponse;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
-import com.ssafy.pistachio.model.dto.feed.request.PictureRequest;
-import com.ssafy.pistachio.model.dto.user.response.UserResponse;
+import com.ssafy.pistachio.model.dto.feed.response.InterestResponse;
+import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.s3.S3FileDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -227,7 +228,7 @@ public class FeedServiceImpl implements FeedService {
 
     @Transactional
     @Override
-    public void batchUpdateLikes(Long userId, Map<Long, Boolean> likeStatusMap) {
+    public void batchUpdateLikes(Long userId, Map<Long, Boolean> likeStatusMap) throws IllegalArgumentException {
         // 현재 유저의 모든 좋아요 상태를 가져옴
         List<Long> currentLikedPostIds = feedLikeDao.getLikedFeedIdsByUserId(userId);
 
@@ -236,6 +237,11 @@ public class FeedServiceImpl implements FeedService {
             Boolean isLiked = entry.getValue();
 
             Feed feed = feedDao.getFeed(feedId);
+
+            if (feed == null) {
+                throw new IllegalArgumentException("피드가 없습니다.");
+            }
+
             boolean currentlyLiked = currentLikedPostIds.contains(feedId);
 
             if (isLiked && !currentlyLiked) {
@@ -276,5 +282,41 @@ public class FeedServiceImpl implements FeedService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<InterestResponse> getInterestByUser(User dbUser) {
+        int role = userDao.getRole(dbUser.getId());
+
+        List<InterestResponse> interestResponses = new ArrayList<>();
+
+        switch (role) {
+            case 1: // 일반
+                interestResponses = donationDao.selectInterestResponseByUserId(dbUser.getId());
+                break;
+            case 2: // 피스타치오
+                Long projectId = donationDao.selectAffiliationByUserId(dbUser.getId());
+
+                if (projectId == null) break;
+
+                InterestResponse ir1 = new InterestResponse();
+                ir1.setProjectId(projectId);
+                ir1.setProjectName(donationDao.selectOneDonateProjectById(projectId).getName());
+                interestResponses.add(ir1);
+                break;
+            case 3: // 기관
+                List<DonateProjectResponse> donateProjectResponses
+                        = donationDao.selectAllDonateProjectByAgencyId(dbUser.getMembershipId());
+
+                for (DonateProjectResponse response : donateProjectResponses) {
+                    InterestResponse ir2 = new InterestResponse();
+                    ir2.setProjectId(response.getId());
+                    ir2.setProjectName(response.getName());
+                    interestResponses.add(ir2);
+                }
+                break;
+        }
+
+        return interestResponses;
     }
 }

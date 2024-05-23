@@ -7,6 +7,7 @@ import com.ssafy.pistachio.model.dto.donate.request.*;
 import com.ssafy.pistachio.model.dto.donate.response.DonateProjectResponse;
 import com.ssafy.pistachio.model.dto.donate.response.DonationResponse;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
+import com.ssafy.pistachio.model.dto.feed.response.InterestResponse;
 
 import java.util.List;
 
@@ -54,8 +55,11 @@ public interface DonationDao {
     public int insertAffiliation(AffiliationRequest affiliationRequest);
 
     // 해당 유저 가입 정보 확인
-    public long selectAffiliationByUserId(long userId);
+    public Long selectAffiliationByUserId(long userId);
 
     // 피스타치오 프로젝트 탈퇴
     public int deleteAffiliation(long userId);
+
+    // 흥미있는 프로젝트 리스트 리턴
+    public List<InterestResponse> selectInterestResponseByUserId(long userId);
 }

@@ -5,6 +5,7 @@ import com.ssafy.pistachio.model.dto.comment.response.CommentResponse;
 import com.ssafy.pistachio.model.dto.feed.request.FeedRequest;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponse;
 import com.ssafy.pistachio.model.dto.feed.response.FeedResponseAll;
+import com.ssafy.pistachio.model.dto.feed.response.InterestResponse;
 import com.ssafy.pistachio.model.dto.user.User;
 import com.ssafy.pistachio.model.service.FeedService;
 import com.ssafy.pistachio.model.service.UserService;
@@ -36,10 +37,19 @@ public class FeedController {
         this.amazonS3Service = amazonS3Service;
     }
 
+    @GetMapping("/interest")
+    public ResponseEntity<?> getInterest(HttpSession session) {
+        String email = (String) session.getAttribute("Login_User");
+        User dbUser = userService.getUserByEmail(email);
+        List<InterestResponse> interestResponses = feedService.getInterestByUser(dbUser);
+        return ResponseEntity.ok(interestResponses);
+    }
+
+
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> writeFeed(HttpSession session,
-                                  @RequestPart(value = "feedRequest") FeedRequest feedRequest,
-                                  @RequestPart(value = "pictures") List<MultipartFile> multipartFiles
+                                       @RequestPart(value = "feedRequest") FeedRequest feedRequest,
+                                       @RequestPart(value = "pictures") List<MultipartFile> multipartFiles
     ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
@@ -205,7 +215,12 @@ public class FeedController {
     ) {
         String email = (String) session.getAttribute("Login_User");
         User dbUser = userService.getUserByEmail(email);
-        feedService.batchUpdateLikes(dbUser.getId(), likeStatusMap);
-        return ResponseEntity.ok().build();
+        try {
+            feedService.batchUpdateLikes(dbUser.getId(), likeStatusMap);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.err.println(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
